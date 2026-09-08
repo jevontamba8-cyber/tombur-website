@@ -337,7 +337,44 @@ function handleFormSubmit() {
   }
 }
 
-// Dynamic QRIS Modal
+// Dynamic QRIS Modal & Auto-Compressed Payment Proof Upload
+function compressImageFile(file, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      const MAX_DIM = 800;
+
+      if (width > height) {
+        if (width > MAX_DIM) {
+          height = Math.round((height * MAX_DIM) / width);
+          width = MAX_DIM;
+        }
+      } else {
+        if (height > MAX_DIM) {
+          width = Math.round((width * MAX_DIM) / height);
+          height = MAX_DIM;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Compress to high clarity JPEG (~40KB Data URI)
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+      callback(compressedDataUrl);
+    };
+    img.onerror = () => callback(e.target.result);
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 function showQrisModal(order) {
   document.getElementById('qrisOrderId').textContent = order.id;
   document.getElementById('qrisDynamicAmount').textContent = `Rp ${order.total.toLocaleString('id-ID')}`;
@@ -346,15 +383,20 @@ function showQrisModal(order) {
   btnSubmitProof.onclick = () => {
     const fileInput = document.getElementById('paymentProofInput');
     if (fileInput.files && fileInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        order.proofImage = e.target.result;
+      btnSubmitProof.disabled = true;
+      btnSubmitProof.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengompres & Memproses...';
+      
+      compressImageFile(fileInput.files[0], (compressedDataUri) => {
+        order.proofImage = compressedDataUri;
         order.status = 'menunggu_verifikasi';
         updateOrderInStorage(order);
+        
+        btnSubmitProof.disabled = false;
+        btnSubmitProof.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Bukti & Selesaikan Pemesanan';
+        
         closeModal('qrisPaymentModal');
         showPickupNoticeModal(order);
-      };
-      reader.readAsDataURL(fileInput.files[0]);
+      });
     } else {
       order.status = 'menunggu_verifikasi';
       updateOrderInStorage(order);
