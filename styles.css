@@ -441,9 +441,15 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 2rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.1);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 28px rgba(255, 215, 0, 0.25);
 }
 
 .glass-card::before {
@@ -453,7 +459,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--accent-red), var(--accent-gold));
+  background: linear-gradient(90deg, var(--accent-red), var(--accent-gold), var(--accent-red));
 }
 
 .card-title {
@@ -522,8 +528,27 @@ body {
 
 .pricing-card-option:hover, .pricing-card-option.selected {
   border-color: var(--accent-gold);
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(255, 215, 0, 0.2));
-  box-shadow: 0 0 18px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(255, 215, 0, 0.25));
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.pricing-card-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent-gold);
+  color: var(--text-dark);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
 }
 
 .product-card-img {
@@ -537,30 +562,33 @@ body {
 
 .stock-badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 0.7rem;
-  font-weight: 700;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.72rem;
+  font-weight: 800;
   margin-top: 4px;
-  color: var(--text-muted);
+  color: var(--text-main);
+  border: 1px solid rgba(255,215,0,0.2);
 }
 
 .payment-method-card {
   background: rgba(25, 3, 3, 0.85);
   border: 2px solid rgba(255, 215, 0, 0.2);
   border-radius: var(--radius-md);
-  padding: 1rem;
+  padding: 1.1rem 1rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   display: block;
+  position: relative;
 }
 
 .payment-method-card:hover, .payment-method-card.selected {
   border-color: var(--accent-gold);
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(255, 215, 0, 0.2));
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.4), rgba(255, 215, 0, 0.25));
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
 }
 
 .qty-control {
