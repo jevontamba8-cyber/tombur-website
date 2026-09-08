@@ -416,20 +416,28 @@
     </div>
   </div>
 
+  <!-- Mobile Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
   <script src="admin.js"></script>
   <script>
     function setActiveNav(elem) {
       document.querySelectorAll('.sidebar-nav-link').forEach(link => link.classList.remove('active'));
       elem.classList.add('active');
       if (window.innerWidth <= 992) {
-        document.getElementById('adminSidebar').classList.remove('open');
+        document.getElementById('adminSidebar')?.classList.remove('open');
+        document.getElementById('sidebarBackdrop')?.classList.remove('active');
       }
     }
 
     function toggleSidebar() {
       const sidebar = document.getElementById('adminSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
       if (sidebar) {
         sidebar.classList.toggle('open');
+      }
+      if (backdrop) {
+        backdrop.classList.toggle('active');
       }
     }
   </script>
