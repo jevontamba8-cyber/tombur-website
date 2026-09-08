@@ -119,9 +119,14 @@ function setupAuth() {
     location.reload();
   });
 
-  document.getElementById('btnRefreshData').addEventListener('click', loadDashboardData);
+  // 1. Sync Data Button Handler
+  document.getElementById('btnRefreshData')?.addEventListener('click', () => {
+    loadDashboardData();
+    showAdminToast('Data transaksi & sisa kuota berhasil disinkronkan!', 'fa-rotate');
+  });
 
-  document.getElementById('btnResetDatabase').addEventListener('click', () => {
+  // 2. Reset Database Button Handler
+  document.getElementById('btnResetDatabase')?.addEventListener('click', () => {
     if (confirm('Apakah Anda yakin ingin mengosongkan seluruh database transaksi? (Sistem akan kembali bersih dengan data 0).')) {
       localStorage.setItem('parheheon_orders', JSON.stringify([]));
       const resetStock = {
@@ -130,10 +135,109 @@ function setupAuth() {
         'kipas': 200
       };
       saveStock(resetStock);
+      previousOrderCount = 0;
       loadDashboardData();
-      alert('Database transaksi berhasil dikosongkan. Sistem siap mencatat transaksi baru (Tanpa Data Dummy).');
+      showAdminToast('Database transaksi berhasil dikosongkan! Kuota di-reset.', 'fa-trash-can');
     }
   });
+
+  // Start real-time new order notification monitoring
+  initRealtimeOrderMonitor();
+}
+
+// Real-Time Audio Chime Notification Synthesizer (Web Audio API)
+function playNotificationChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // Pleasant two-tone chime (E5 -> G5)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(659.25, ctx.currentTime);
+    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.15);
+    
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch (e) {
+    console.log('Chime sound skipped:', e);
+  }
+}
+
+// Floating Toast Notification Engine for Admin
+function showAdminToast(message, iconClass = 'fa-bell') {
+  let container = document.getElementById('adminToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'adminToastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.style.cssText = 'background: linear-gradient(135deg, #3b0303, #660606); border: 2px solid var(--accent-gold); box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.5); font-size: 0.9rem; color: #fff; padding: 1rem 1.25rem;';
+  toast.innerHTML = `<i class="fa-solid ${iconClass}" style="color: var(--accent-gold); font-size: 1.4rem;"></i> <div><strong style="color: var(--accent-gold); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; display:block;">NOTIFIKASI PANITIA REAL-TIME</strong> <span>${message}</span></div>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    if (toast && toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 6000);
+}
+
+// Real-Time New Order Detection Engine
+let previousOrderCount = null;
+
+function initRealtimeOrderMonitor() {
+  const initialOrders = getOrders();
+  previousOrderCount = initialOrders.length;
+
+  // 1. Cross-Tab Storage Event Listener
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'parheheon_orders') {
+      checkNewOrders();
+    }
+  });
+
+  // 2. Heartbeat Polling fallback (every 3 seconds)
+  setInterval(() => {
+    checkNewOrders();
+  }, 3000);
+}
+
+function checkNewOrders() {
+  const currentOrders = getOrders();
+  if (previousOrderCount === null) {
+    previousOrderCount = currentOrders.length;
+    return;
+  }
+
+  if (currentOrders.length > previousOrderCount) {
+    const newestOrder = currentOrders[0];
+    previousOrderCount = currentOrders.length;
+    
+    // Refresh dashboard UI math & tables
+    loadDashboardData();
+    
+    // Play sound & pop notification toast
+    playNotificationChime();
+    if (newestOrder) {
+      showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name} (${newestOrder.productName} - Rp ${newestOrder.total.toLocaleString('id-ID')})`, 'fa-bell');
+    }
+  } else if (currentOrders.length !== previousOrderCount) {
+    previousOrderCount = currentOrders.length;
+    loadDashboardData();
+  }
 }
 
 function loadDashboardData() {
