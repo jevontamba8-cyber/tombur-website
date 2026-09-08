@@ -442,6 +442,18 @@ function copyQrisAmount() {
   }
 }
 
+function copyText(str) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(str).then(() => {
+      showToast(`Teks "${str}" berhasil disalin!`, 'fa-copy');
+    }).catch(() => {
+      showToast(`Nomor: ${str}`);
+    });
+  } else {
+    showToast(`Nomor: ${str}`);
+  }
+}
+
 function showQrisModal(order) {
   document.getElementById('qrisOrderId').textContent = order.id;
   document.getElementById('qrisDynamicAmount').textContent = `Rp ${order.total.toLocaleString('id-ID')}`;

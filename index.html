@@ -447,10 +447,10 @@
 
   <!-- QRIS Payment Modal with Dynamic Nominal & Upload Proof -->
   <div class="modal-overlay" id="qrisPaymentModal">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 540px;">
       <button class="modal-close" onclick="closeModal('qrisPaymentModal')">&times;</button>
       <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 0.5rem; text-align: center;">
-        <i class="fa-solid fa-qrcode"></i> Pembayaran Dynamic QRIS Resmi
+        <i class="fa-solid fa-qrcode"></i> Pembayaran QRIS & Transfer Bank Resmi
       </h3>
       <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
         Nomor Transaksi: <strong id="qrisOrderId" style="color: #fff;">TRX-XXXXXX</strong>
@@ -463,11 +463,12 @@
         <button type="button" onclick="copyQrisAmount()" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.85rem; margin-bottom: 8px; background: rgba(0,0,0,0.4); border-color: var(--accent-gold); color: var(--accent-gold); display: inline-flex; align-items: center; gap: 6px;">
           <i class="fa-solid fa-copy"></i> Salin Nominal Transaksi
         </button>
-        <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600; display: block;"><i class="fa-solid fa-circle-info"></i> Scan Barcode QRIS Resmi di bawah ini dengan M-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, Dana, ShopeePay, LinkAja)</span>
+        <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600; display: block;"><i class="fa-solid fa-circle-info"></i> Lakukan pembayaran pas sesuai total di atas via QRIS atau Transfer Bank.</span>
       </div>
 
+      <!-- Option 1: Scan Barcode QRIS Resmi -->
       <div class="payment-qris-wrap" style="text-align: center; padding: 1.25rem; background: #fff; border-radius: 14px; margin: 1rem 0; border: 2px solid var(--accent-gold); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-bottom: 10px;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> BARCODE QRIS RESMI PARHEHEON 2026:</p>
+        <p style="font-size: 0.9rem; color: #111; font-weight: 900; margin-bottom: 10px;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> BARCODE QRIS RESMI (BCA, MANDIRI, BRI, GOPAY, DANA, OVO):</p>
         
         <!-- Official Authentic Scannable QRIS Container -->
         <div id="qrisInteractiveCanvas" style="display: flex; justify-content: center; align-items: center; background: #fff; padding: 6px; border-radius: 10px; margin: 0 auto;"></div>
@@ -476,9 +477,37 @@
         <span style="font-size: 0.75rem; color: #555; font-weight: 700;">NMID: ID1026537234803</span>
       </div>
 
+      <!-- Option 2: Transfer Bank Direct (Bagi Pengguna HP Single Device) -->
+      <div style="background: rgba(255, 215, 0, 0.06); border: 1.5px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 1.1rem; margin-bottom: 1rem;">
+        <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 8px; text-transform: uppercase;">
+          <i class="fa-solid fa-building-columns"></i> Alternatif Transfer Langsung via M-Banking / E-Wallet:
+        </h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">Jika Anda memesan langsung dari HP dan sulit melakukan scan layar:</p>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Rekening BCA -->
+          <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem;">Bank BCA: <span style="color: var(--accent-gold);">1670982341</span></strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">a.n. PARHEHEON HKBP CIBUBUR</div>
+            </div>
+            <button type="button" onclick="copyText('1670982341')" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;"><i class="fa-solid fa-copy"></i> Salin No. Rek</button>
+          </div>
+
+          <!-- Rekening Mandiri -->
+          <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem;">Bank Mandiri: <span style="color: var(--accent-gold);">1570008923411</span></strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">a.n. SEKSI DANA PARHEHEON</div>
+            </div>
+            <button type="button" onclick="copyText('1570008923411')" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;"><i class="fa-solid fa-copy"></i> Salin No. Rek</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Upload Bukti Pembayaran -->
       <div style="background: rgba(255,255,255,0.05); padding: 1.25rem; border-radius: 12px; border: 1px dashed var(--border-color); margin-bottom: 1rem;">
-        <label class="form-label" style="margin-bottom: 6px;"><i class="fa-solid fa-upload"></i> Upload Bukti Pembayaran QRIS (Opsional/Saran)</label>
+        <label class="form-label" style="margin-bottom: 6px;"><i class="fa-solid fa-upload"></i> Upload Bukti Pembayaran QRIS / Transfer (Opsional/Saran)</label>
         <input type="file" id="paymentProofInput" class="form-control" accept="image/*">
         <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 6px;">
           Status awal: <strong>Menunggu Verifikasi</strong>. Panitia akan mengonfirmasi bukti pembayaran Anda.
