@@ -141,199 +141,36 @@ function updateLiveStockDisplay() {
   if (badgeT) badgeT.textContent = `Kuota Tiket: ${sTiket}`;
   if (badgeB) badgeB.textContent = `Kuota Bundling: ${sBundling}`;
   if (badgeK) badgeK.textContent = `Stok Kipas: ${sKipas}`;
+
+  checkLowStockAlert();
 }
 
-// Interactive catalog selection button handler
-function selectProductFromCatalog(category) {
-  const card = document.querySelector(`.pricing-card-option[data-type="${category}"]`);
-  if (card) {
-    card.click();
-  }
-}
-
-// Category Selection
-function setupPricingCategorySelector() {
-  const options = document.querySelectorAll('.pricing-card-option');
-  options.forEach(opt => {
-    opt.addEventListener('click', () => {
-      options.forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      
-      const type = opt.getAttribute('data-type');
-      const price = parseInt(opt.getAttribute('data-price'));
-
-      document.getElementById('selectedCategory').value = type;
-      document.getElementById('selectedUnitPrice').value = price;
-
-      calculatePrice();
-    });
-  });
-}
-
-// Payment Method Selector
-function setupPaymentMethodSelector() {
-  const qrisLabel = document.getElementById('payMethodQrisLabel');
-  const cashLabel = document.getElementById('payMethodCashLabel');
-
-  if (!qrisLabel || !cashLabel) return;
-
-  qrisLabel.addEventListener('click', () => {
-    qrisLabel.classList.add('selected');
-    cashLabel.classList.remove('selected');
-    document.querySelector('input[name="payMethod"][value="qris"]').checked = true;
-  });
-
-  cashLabel.addEventListener('click', () => {
-    cashLabel.classList.add('selected');
-    qrisLabel.classList.remove('selected');
-    document.querySelector('input[name="payMethod"][value="cash"]').checked = true;
-  });
-}
-
-function setupFormListeners() {
-  const eventDaySelect = document.getElementById('eventDaySelect');
-  const ticketQtyInput = document.getElementById('ticketQty');
-  const btnMinus = document.getElementById('btnMinus');
-  const btnPlus = document.getElementById('btnPlus');
-  const orderForm = document.getElementById('orderForm');
-
-  if (!orderForm) return;
-
-  eventDaySelect.addEventListener('change', () => {
-    updateLiveStockDisplay();
-    calculatePrice();
-  });
-
-  btnMinus.addEventListener('click', () => {
-    let val = parseInt(ticketQtyInput.value);
-    if (val > 1) {
-      ticketQtyInput.value = val - 1;
-      calculatePrice();
-    }
-  });
-
-  btnPlus.addEventListener('click', () => {
-    let val = parseInt(ticketQtyInput.value);
-    ticketQtyInput.value = val + 1;
-    calculatePrice();
-  });
-
-  orderForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    handleFormSubmit();
-  });
-}
-
-function calculatePrice() {
-  const dayKey = document.getElementById('eventDaySelect').value;
-  const categoryKey = document.getElementById('selectedCategory').value;
-  const product = PRODUCT_CATALOG[categoryKey];
-  const unitPrice = product ? product.price : 10000;
-  const qty = parseInt(document.getElementById('ticketQty').value) || 1;
-  const total = qty * unitPrice;
-
-  document.getElementById('summaryDayText').textContent = DAY_NAMES[dayKey] || dayKey;
-  document.getElementById('summaryCategoryText').textContent = `${product.name} @ Rp ${unitPrice.toLocaleString('id-ID')}`;
-  document.getElementById('summaryQty').textContent = `${qty} Item`;
-  document.getElementById('totalPriceText').textContent = `Rp ${total.toLocaleString('id-ID')}`;
-}
-
-// Order Creation & Stock Deduction Logic
-function handleFormSubmit() {
-  const name = document.getElementById('custName').value.trim();
-  const day = document.getElementById('eventDaySelect').value;
-  const church = document.getElementById('churchSelect').value;
-  const category = document.getElementById('selectedCategory').value;
-  const product = PRODUCT_CATALOG[category];
-  const unitPrice = product.price;
-  const qty = parseInt(document.getElementById('ticketQty').value);
-  const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
-
-  if (!name) {
-    alert('Mohon isi Nama Pemesan.');
-    return;
-  }
-  if (!church) {
-    alert('Mohon pilih Asal Gereja / Kontingen.');
-    return;
-  }
-
-  // Quota & Stock Validation
+// Low Stock Alert Banner Engine
+function checkLowStockAlert() {
   const stock = getStock();
+  const alertContainer = document.getElementById('lowStockAlertBanner');
+  if (!alertContainer) return;
 
-  if (category === 'tiket' || category === 'bundling') {
-    if (day === 'day1' && (stock['tiket_day1'] ?? 200) < qty) {
-      alert(`Mohon maaf, kuota tiket Day One tersisa ${stock['tiket_day1'] ?? 0} tiket.`);
-      return;
-    }
-    if (day === 'day2' && (stock['tiket_day2'] ?? 100) < qty) {
-      alert(`Mohon maaf, kuota tiket Day Two tersisa ${stock['tiket_day2'] ?? 0} tiket.`);
-      return;
-    }
-    if (day === 'both') {
-      if ((stock['tiket_day1'] ?? 200) < qty || (stock['tiket_day2'] ?? 100) < qty) {
-        alert(`Mohon maaf, kuota tiket terusan 2 hari tidak mencukupi.`);
-        return;
-      }
-    }
-  }
+  const d1 = stock['tiket_day1'] ?? 200;
+  const d2 = stock['tiket_day2'] ?? 100;
 
-  if (category === 'bundling' || category === 'kipas') {
-    if ((stock['kipas'] ?? 200) < qty) {
-      alert(`Mohon maaf, stok Kipas tersisa ${stock['kipas'] ?? 0} unit.`);
-      return;
-    }
-  }
-
-  // Deduct Stock
-  if (category === 'tiket' || category === 'bundling') {
-    if (day === 'day1' || day === 'both') {
-      stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
-    }
-    if (day === 'day2' || day === 'both') {
-      stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
-    }
-  }
-
-  if (category === 'bundling' || category === 'kipas') {
-    stock['kipas'] = Math.max(0, (stock['kipas'] ?? 200) - qty);
-  }
-
-  saveStock(stock);
-  updateLiveStockDisplay();
-
-  const trxId = 'TRX-SHINE-' + Math.floor(100000 + Math.random() * 900000);
-  const total = qty * unitPrice;
-
-  // Initial status: 'menunggu_verifikasi' for QRIS, 'menunggu_pembayaran' for Cash
-  const initialStatus = payMethod === 'qris' ? 'menunggu_verifikasi' : 'menunggu_pembayaran';
-
-  const newOrder = {
-    id: trxId,
-    name: name,
-    day: day,
-    church: church,
-    category: category,
-    productName: product.name,
-    unitPrice: unitPrice,
-    qty: qty,
-    total: total,
-    payMethod: payMethod,
-    status: initialStatus,
-    pickupStatus: 'belum_diambil',
-    proofImage: null,
-    date: new Date().toLocaleString('id-ID')
-  };
-
-  lastCreatedOrder = newOrder;
-  const orders = getOrders();
-  orders.unshift(newOrder);
-  saveOrders(orders);
-
-  if (payMethod === 'qris') {
-    showQrisModal(newOrder);
+  if (d1 < 30 || d2 < 20) {
+    alertContainer.style.display = 'block';
+    alertContainer.innerHTML = `
+      <div style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.95), rgba(139, 0, 0, 0.95)); border: 2px solid var(--accent-gold); padding: 1rem 1.25rem; border-radius: 12px; color: #fff; display: flex; align-items: center; gap: 12px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.8rem; color: var(--accent-gold); flex-shrink: 0;"></i>
+        <div>
+          <strong style="color: var(--accent-gold); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">🚨 PERINGATAN: KUOTA TIKET MENIPIS!</strong>
+          <p style="font-size: 0.88rem; margin-top: 2px; color: #FFE4E6;">
+            ${d1 < 30 ? `Sisa Tiket Day One: <strong style="color: var(--accent-gold);">${d1} Tiket</strong>. ` : ''}
+            ${d2 < 20 ? `Sisa Tiket Day Two: <strong style="color: var(--accent-gold);">${d2} Tiket</strong>. ` : ''}
+            Segera amankan dan selesaikan pemesanan Anda sebelum kuota habis!
+          </p>
+        </div>
+      </div>
+    `;
   } else {
-    showCashModal(newOrder);
+    alertContainer.style.display = 'none';
   }
 }
 
@@ -378,6 +215,26 @@ function compressImageFile(file, callback) {
 function showQrisModal(order) {
   document.getElementById('qrisOrderId').textContent = order.id;
   document.getElementById('qrisDynamicAmount').textContent = `Rp ${order.total.toLocaleString('id-ID')}`;
+
+  // Interactive Dynamic Canvas QR Code Generator
+  const canvasWrap = document.getElementById('qrisInteractiveCanvas');
+  if (canvasWrap) {
+    canvasWrap.innerHTML = '';
+    const qrPayloadStr = `00020101021226680016ID.CO.QRIS.WWW0118936009140000000000520458125303360540${order.total}5802ID5923SEKSI DANA PARHEHEON 20266007CIBUBUR6304`;
+    
+    if (window.QRCode) {
+      new QRCode(canvasWrap, {
+        text: qrPayloadStr,
+        width: 170,
+        height: 170,
+        colorDark: "#120202",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    } else {
+      canvasWrap.innerHTML = `<img src="gambar/qris_official.jpg" alt="QRIS Resmi" style="max-width:170px; height:auto; border-radius:6px;">`;
+    }
+  }
 
   const btnSubmitProof = document.getElementById('btnSubmitQrisProof');
   btnSubmitProof.onclick = () => {

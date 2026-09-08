@@ -519,3 +519,139 @@ function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.classList.remove('active');
 }
+
+// Official Print PDF Financial Report Engine with Signature Block
+function printOfficialPdfReport() {
+  const orders = getOrders();
+  if (orders.length === 0) {
+    alert('Belum ada data transaksi di database untuk dicetak.');
+    return;
+  }
+
+  let totalIncome = 0;
+  let qrisIncome = 0;
+  let cashIncome = 0;
+  let totalTickets = 0;
+
+  orders.forEach(o => {
+    if (o.status === 'lunas') {
+      totalIncome += o.total;
+      if (o.category === 'tiket' || o.category === 'bundling') {
+        totalTickets += (o.day === 'both' ? o.qty * 2 : o.qty);
+      }
+      if (o.payMethod === 'qris') qrisIncome += o.total;
+      if (o.payMethod === 'cash') cashIncome += o.total;
+    }
+  });
+
+  const printWin = window.open('', '_blank', 'width=900,height=750');
+  
+  let rowsHtml = '';
+  let no = 1;
+  orders.forEach(o => {
+    if (o.status === 'lunas') {
+      rowsHtml += `
+        <tr>
+          <td style="border: 1px solid #333; padding: 6px; text-align: center;">${no++}</td>
+          <td style="border: 1px solid #333; padding: 6px; font-weight: bold;">${o.id}</td>
+          <td style="border: 1px solid #333; padding: 6px;">${o.name}</td>
+          <td style="border: 1px solid #333; padding: 6px;">${o.church}</td>
+          <td style="border: 1px solid #333; padding: 6px;">${DAY_NAMES[o.day] || o.day}</td>
+          <td style="border: 1px solid #333; padding: 6px;">${o.productName}</td>
+          <td style="border: 1px solid #333; padding: 6px; text-align: center;">${o.qty}</td>
+          <td style="border: 1px solid #333; padding: 6px; text-align: right; font-weight: bold;">Rp ${o.total.toLocaleString('id-ID')}</td>
+          <td style="border: 1px solid #333; padding: 6px; text-align: center;">${o.payMethod.toUpperCase()}</td>
+          <td style="border: 1px solid #333; padding: 6px; text-align: center;">${o.pickupStatus === 'tiket_diambil' ? 'Sudah Diambil' : 'Belum Diambil'}</td>
+        </tr>
+      `;
+    }
+  });
+
+  printWin.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Laporan Keuangan Resmi — SHINE TOMBUR Vol 2</title>
+      <style>
+        body { font-family: 'Times New Roman', serif; margin: 30px; color: #000; background: #fff; }
+        .header-title { text-align: center; font-weight: bold; font-size: 16pt; margin-bottom: 4px; text-transform: uppercase; }
+        .header-sub { text-align: center; font-size: 12pt; margin-bottom: 20px; font-style: italic; border-bottom: 2px double #000; padding-bottom: 10px; }
+        .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt; }
+        .summary-table td { padding: 6px; border: 1px solid #000; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 9pt; }
+        .data-table th { border: 1px solid #000; padding: 6px; background: #f0f0f0; }
+        .signature-block { width: 100%; margin-top: 40px; font-size: 11pt; }
+        .signature-block td { text-align: center; vertical-align: top; width: 50%; height: 90px; }
+      </style>
+    </head>
+    <body>
+      <div class="header-title">PARHEHEON NAPOSO BULUNG HKBP CIBUBUR</div>
+      <div class="header-title" style="font-size: 14pt;">SHINE — TOMBUR Vol 2</div>
+      <div class="header-sub">PASAHATON SPORTS FESTIVAL 2026 — LAPORAN REKAPITULASI KEUANGAN RESMI (LUNAS)</div>
+
+      <p style="font-size: 10pt; margin-bottom: 10px;"><strong>Waktu Cetak Laporan:</strong> ${new Date().toLocaleString('id-ID')}</p>
+
+      <table class="summary-table">
+        <tr>
+          <td><strong>Total Uang Masuk (Lunas):</strong></td>
+          <td style="font-size: 11pt; font-weight: bold;">Rp ${totalIncome.toLocaleString('id-ID')}</td>
+          <td><strong>Total Tiket Terjual:</strong></td>
+          <td style="font-size: 11pt; font-weight: bold;">${totalTickets} Tiket</td>
+        </tr>
+        <tr>
+          <td><strong>Uang Masuk QRIS:</strong></td>
+          <td>Rp ${qrisIncome.toLocaleString('id-ID')}</td>
+          <td><strong>Uang Masuk CASH:</strong></td>
+          <td>Rp ${cashIncome.toLocaleString('id-ID')}</td>
+        </tr>
+      </table>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>No. TRX</th>
+            <th>Nama Pembeli</th>
+            <th>Gereja / Kontingen</th>
+            <th>Hari Event</th>
+            <th>Produk</th>
+            <th>Qty</th>
+            <th>Total (Rp)</th>
+            <th>Metode</th>
+            <th>Pengambilan</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml || '<tr><td colspan="10" style="text-align:center; padding:15px;">Belum ada data transaksi lunas.</td></tr>'}
+        </tbody>
+      </table>
+
+      <table class="signature-block">
+        <tr>
+          <td>
+            Cibubur, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}<br>
+            Mengetahui & Menyetujui,<br>
+            <strong>Ketua Panitia Parheheon</strong>
+            <br><br><br><br>
+            ( _______________________ )
+          </td>
+          <td>
+            Cibubur, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}<br>
+            Disusun Oleh,<br>
+            <strong>Seksi Dana & Bendahara</strong>
+            <br><br><br><br>
+            ( _______________________ )
+          </td>
+        </tr>
+      </table>
+
+      <script>
+        window.onload = function() {
+          window.print();
+        };
+      </script>
+    </body>
+    </html>
+  `);
+  printWin.document.close();
+}

@@ -11,6 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QRCode.js Library for Dynamic QRIS Canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- Custom CSS -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -241,6 +243,9 @@
       
       <!-- Form Pemesanan -->
       <div class="glass-card">
+        <!-- Low Stock Alert Banner (Rendered via JS when quota is low) -->
+        <div id="lowStockAlertBanner" style="display: none; margin-bottom: 1.25rem;"></div>
+
         <h3 class="card-title"><i class="fa-solid fa-cart-shopping" style="color: var(--accent-gold);"></i> Form Pemesanan <span class="shine-glow-text" style="font-size: 1.1rem; margin-left: auto;">SHINE 2026</span></h3>
 
         <form id="orderForm">
@@ -404,10 +409,14 @@
         <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Nominal pembayaran otomatis sesuai total transaksi (Pembeli tidak perlu mengetik nominal secara manual)</span>
       </div>
 
-      <div class="payment-qris-wrap">
-        <img src="gambar/qris_official.jpg" alt="QRIS Resmi Parheheon 2026">
-        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-top: 6px;">SEKSI DANA PARHEHEON 2026</p>
-        <span style="font-size: 0.75rem; color: #555;">NMID: ID1026537234803</span>
+      <div class="payment-qris-wrap" style="text-align: center; padding: 1.25rem; background: #fff; border-radius: 14px; margin: 1rem 0; border: 2px solid var(--accent-gold); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        <p style="font-size: 0.85rem; color: #333; font-weight: 800; margin-bottom: 8px;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> SCAN QR CODE DINAMIS DENGAN HP ANDA:</p>
+        
+        <!-- Interactive Canvas QR Code generated dynamically by QRCode.js -->
+        <div id="qrisInteractiveCanvas" style="display: flex; justify-content: center; align-items: center; background: #fff; padding: 10px; border-radius: 10px; margin: 0 auto; width: 190px; height: 190px;"></div>
+        
+        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-top: 10px;">SEKSI DANA PARHEHEON 2026</p>
+        <span style="font-size: 0.75rem; color: #555; font-weight: 700;">NMID: ID1026537234803</span>
       </div>
 
       <!-- Upload Bukti Pembayaran -->
