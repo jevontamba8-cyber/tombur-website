@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHINE — Parheheon Naposo Bulung HKBP Cibubur (TOMBUR Vol 2)</title>
+  <meta name="description" content="Platform Pemesanan Tiket & Merchandise Resmi Parheheon Naposo Bulung HKBP Cibubur - SHINE (Serving Him In Every Endeavor!).">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="#" class="brand">
+      <img src="gambar/logo_parheheon.png" alt="Logo Parheheon HKBP Cibubur (Gambar 3)" class="brand-logo-img">
+      <div>
+        <span class="shine-glow-text" style="font-size: 1.25rem;">SHINE</span>
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1px;">PARHEHEON HKBP CIBUBUR</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#beranda" class="nav-link active">Beranda</a></li>
+      <li><a href="#katalog" class="nav-link">Katalog Produk</a></li>
+      <li><a href="#info" class="nav-link">Info Event</a></li>
+      <li><a href="#sponsors" class="nav-link">Sponsor</a></li>
+      <li><a href="#pesan" class="nav-link">Pesan Tiket</a></li>
+      <li><a href="#cek-tiket" class="nav-link">Cek Pemesanan</a></li>
+      <li><a href="admin.html" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-user-shield"></i> Portal Admin</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="beranda">
+    <div class="container">
+      <div class="hero-badge">
+        <i class="fa-solid fa-star" style="color: var(--accent-gold);"></i> <span class="shine-glow-text">SHINE</span> — SERVING HIM IN EVERY ENDEAVOR!
+      </div>
+      
+      <div style="margin-bottom: 2rem;">
+        <img src="gambar/shine_header.png" alt="SHINE Tagline Banner" style="max-width: 360px; width: 100%; height: auto; margin: 0 auto 1.25rem; display: block; filter: drop-shadow(0 0 15px rgba(255,215,0,0.3));">
+        <h1 class="hero-title">
+          Parheheon Naposo Bulung <br>
+          <span class="shine-glow-text">HKBP Cibubur 2026</span>
+        </h1>
+        <p class="hero-subtitle">
+          PASAHATON SPORTS FESTIVAL — <em>"Cashing Goals, Making History!"</em> (Matius 5:16). Pesan produk & tiket Anda secara online, bayar via <strong>Dynamic QRIS / Cash</strong>, dan ambil tiket fisik di meja panitia.
+        </p>
+      </div>
+
+      <!-- Main Visual Showcase Cards (Gambar 4 & Gambar 5) -->
+      <div class="hero-showcase-grid">
+        <div class="showcase-card" title="Gambar 4 - SHINE Event Poster">
+          <img src="gambar/hero_shine.jpg" alt="Gambar 4 - SHINE Event Poster">
+        </div>
+        <div class="showcase-card" title="Gambar 5 - Futsal Sports Festival Poster">
+          <img src="gambar/hero_futsal.png" alt="Gambar 5 - Futsal Sports Festival Poster">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem;">
+        <a href="#pesan" class="btn btn-primary"><i class="fa-solid fa-cart-shopping"></i> Pesan Tiket & Produk</a>
+        <a href="#cek-tiket" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Cek Status Pemesanan</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Catalog Showcase Section -->
+  <section class="container" id="katalog" style="padding-bottom: 4rem;">
+    <div class="section-title-wrap" style="text-align: center; margin-bottom: 2.5rem;">
+      <h2 class="section-title" style="color: var(--accent-gold); font-size: 2rem; font-weight: 900;">Katalog Produk & Tiket Official</h2>
+      <p class="section-desc" style="color: var(--text-muted);">Pilih produk atau paket bundling yang Anda inginkan. Stok kuota terbarui secara real-time dari database.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem;">
+      
+      <!-- Card Tiket Masuk -->
+      <div class="glass-card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 1rem; border: 2px solid var(--border-color);">
+            <img src="gambar/66a8c20a-c6ef-4de7-b4f9-33a68f1a26df.jpg" alt="Tiket Wristband" style="width: 100%; height: 210px; object-fit: cover;">
+          </div>
+          <h3 style="font-size: 1.25rem; color: #fff; font-weight: 800;">Tiket Masuk Wristband</h3>
+          <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-gold); margin: 8px 0;">Rp 10.000</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Gelang fisik resmi tiket masuk venue Wira Yudha Sport Center. Kuota: 200 tiket (Day 1) & 100 tiket (Day 2).
+          </p>
+        </div>
+        <a href="#pesan" onclick="selectProductFromCatalog('tiket')" class="btn btn-primary btn-block"><i class="fa-solid fa-ticket"></i> Pilih Tiket Ini</a>
+      </div>
+
+      <!-- Card Paket Bundling (Tiket + Kipas) -->
+      <div class="glass-card" style="text-align: center; border: 2px solid var(--accent-gold); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="position: relative; margin-bottom: 1rem; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent-gold);">
+            <!-- Gambar Menunjukkan Isi Bundling (Tiket + Kipas) -->
+            <div style="display: flex; height: 210px;">
+              <div style="width: 50%; position: relative; border-right: 2px solid var(--accent-gold);">
+                <img src="gambar/66a8c20a-c6ef-4de7-b4f9-33a68f1a26df.jpg" alt="Isi 1: Tiket Wristband" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">1x TIKET</span>
+              </div>
+              <div style="width: 50%; position: relative;">
+                <img src="gambar/ad308ac7-acaa-4d1e-a23d-d71b30dc583d.jpg" alt="Isi 2: Kipas Official" style="width: 100%; height: 100%; object-fit: cover;">
+                <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--accent-gold); font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">1x KIPAS</span>
+              </div>
+            </div>
+            <span class="badge badge-verified" style="position: absolute; top: 10px; right: 10px; font-size: 0.75rem; background: var(--accent-gold); color: var(--text-dark); border: none; font-weight: 900;">PAKET BUNDLING</span>
+          </div>
+          <h3 style="font-size: 1.25rem; color: #fff; font-weight: 800;">Paket Bundling (Tiket + Kipas)</h3>
+          <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-gold); margin: 8px 0;">Rp 15.000</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Isi Paket Bundling: <strong>1 Tiket Masuk Wristband + 1 Kipas Official TOMBUR Vol 2</strong> (Hemat Rp 5.000).
+          </p>
+        </div>
+        <a href="#pesan" onclick="selectProductFromCatalog('bundling')" class="btn btn-primary btn-block"><i class="fa-solid fa-box-open"></i> Pilih Paket Bundling</a>
+      </div>
+
+      <!-- Card Kipas Official -->
+      <div class="glass-card" style="text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 1rem; border: 2px solid var(--border-color);">
+            <img src="gambar/ad308ac7-acaa-4d1e-a23d-d71b30dc583d.jpg" alt="Official Kipas TOMBUR Vol 2" style="width: 100%; height: 210px; object-fit: cover;">
+          </div>
+          <h3 style="font-size: 1.25rem; color: #fff; font-weight: 800;">Official Kipas TOMBUR Vol 2</h3>
+          <div style="font-size: 1.4rem; font-weight: 900; color: var(--accent-gold); margin: 8px 0;">Rp 10.000</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Merchandise Kipas Eksklusif Parheheon Naposo Bulung HKBP Cibubur (SHINE).
+          </p>
+        </div>
+        <a href="#pesan" onclick="selectProductFromCatalog('kipas')" class="btn btn-primary btn-block"><i class="fa-solid fa-fan"></i> Pilih Kipas Saja</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Event Info Cards -->
+  <section class="container" id="info">
+    <div class="event-info-card">
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fa-regular fa-calendar-check"></i>
+        </div>
+        <div class="info-content">
+          <label>Waktu Pelaksanaan</label>
+          <p>Day One: Sabtu, 12 Sep 2026 (200 Tiket)</p>
+          <p>Day Two: Minggu, 13 Sep 2026 (100 Tiket)</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div class="info-content">
+          <label>Lokasi Acara</label>
+          <p>Wira Yudha Sport Center</p>
+          <a href="https://share.google/qqLg6wPgksgxhrown" target="_blank" style="font-size: 0.85rem; color: var(--accent-gold); font-weight: 700; text-decoration: underline;">
+            <i class="fa-solid fa-map-pin"></i> Petunjuk Google Maps
+          </a>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fa-solid fa-ticket-simple"></i>
+        </div>
+        <div class="info-content">
+          <label>Pengambilan Tiket Physical</label>
+          <p>Di Meja Panitia Acara</p>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Sebutkan Nama Pemesan / TRX ID</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sponsor Section -->
+  <section class="sponsor-section" id="sponsors">
+    <div class="container">
+      <div class="sponsor-title"><i class="fa-solid fa-handshake-angle"></i> Supported By / Didukung Oleh</div>
+      <div class="sponsor-grid">
+        <div class="sponsor-card" title="Turun Minum">
+          <img src="gambar/sponsor_turunminum.png" alt="Sponsor Turun Minum">
+        </div>
+        <div class="sponsor-card" title="Kantor Pengacara MHS & Rekan">
+          <img src="gambar/sponsor_mhs.jpg" alt="Sponsor Kantor Pengacara MHS & Rekan">
+        </div>
+        <div class="sponsor-card" title="Depot Air Oksitra Q2">
+          <img src="gambar/sponsor_oksitra.jpg" alt="Sponsor Depot Air Oksitra Q2">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Section with Clear Step Flow Guide -->
+  <section class="ticket-section container" id="pesan">
+    <div class="section-title-wrap" style="text-align: center; margin-bottom: 2rem;">
+      <h2 class="section-title" style="color: var(--accent-gold); font-size: 2rem; font-weight: 900;">Form Pemesanan Online</h2>
+      <p class="section-desc" style="color: var(--text-muted);">Ikuti 6 langkah pemesanan di bawah ini dengan mudah dan cepat.</p>
+    </div>
+
+    <!-- 6-Step Visual Order Flow Indicator -->
+    <div class="order-steps-container">
+      <div class="order-step-item active">
+        <div class="step-num">1</div>
+        <span class="step-label">Pilih Hari</span>
+        <i class="fa-solid fa-chevron-right step-arrow"></i>
+      </div>
+      <div class="order-step-item active">
+        <div class="step-num">2</div>
+        <span class="step-label">Pilih Tiket/Produk</span>
+        <i class="fa-solid fa-chevron-right step-arrow"></i>
+      </div>
+      <div class="order-step-item active">
+        <div class="step-num">3</div>
+        <span class="step-label">Jumlah</span>
+        <i class="fa-solid fa-chevron-right step-arrow"></i>
+      </div>
+      <div class="order-step-item active">
+        <div class="step-num">4</div>
+        <span class="step-label">Isi Nama</span>
+        <i class="fa-solid fa-chevron-right step-arrow"></i>
+      </div>
+      <div class="order-step-item active">
+        <div class="step-num">5</div>
+        <span class="step-label">Pilih Pembayaran</span>
+        <i class="fa-solid fa-chevron-right step-arrow"></i>
+      </div>
+      <div class="order-step-item active">
+        <div class="step-num">6</div>
+        <span class="step-label">Konfirmasi</span>
+      </div>
+    </div>
+
+    <div class="booking-grid">
+      
+      <!-- Form Pemesanan -->
+      <div class="glass-card">
+        <h3 class="card-title"><i class="fa-solid fa-cart-shopping" style="color: var(--accent-gold);"></i> Form Pemesanan <span class="shine-glow-text" style="font-size: 1.1rem; margin-left: auto;">SHINE 2026</span></h3>
+
+        <form id="orderForm">
+
+          <!-- Step 1: Pilihan Hari Event -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-regular fa-calendar"></i> Langkah 1: Pilih Hari Acara <span style="color: var(--accent-red-bright);">*</span></label>
+            <select class="form-select" id="eventDaySelect" required>
+              <option value="day1">Day One — Sabtu, 12 September 2026 (Kuota: 200 Tiket)</option>
+              <option value="day2">Day Two — Minggu, 13 September 2026 (Kuota: 100 Tiket)</option>
+              <option value="both">Day One & Day Two (Tiket Terusan 2 Hari)</option>
+            </select>
+          </div>
+
+          <!-- Step 2: Pilihan Produk & Katalog Berfoto -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-box-open"></i> Langkah 2: Pilih Tiket / Produk <span style="color: var(--accent-red-bright);">*</span></label>
+            <div class="pricing-options-grid" id="productCatalogContainer">
+              <!-- Rendered via JS -->
+            </div>
+            <input type="hidden" id="selectedCategory" value="tiket">
+            <input type="hidden" id="selectedUnitPrice" value="10000">
+          </div>
+
+          <!-- Step 3: Quantity Selection -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-list-ol"></i> Langkah 3: Jumlah Pembelian <span style="color: var(--accent-red-bright);">*</span></label>
+            <div class="qty-control">
+              <button type="button" class="qty-btn" id="btnMinus"><i class="fa-solid fa-minus"></i></button>
+              <input type="number" class="form-control qty-input" id="ticketQty" value="1" min="1" readonly>
+              <button type="button" class="qty-btn" id="btnPlus"><i class="fa-solid fa-plus"></i></button>
+              <span id="stockWarningText" style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700; margin-left: 10px;"></span>
+            </div>
+          </div>
+
+          <!-- Step 4: Nama Pemesan & Gereja -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user-pen"></i> Langkah 4: Isi Nama & Asal Gereja <span style="color: var(--accent-red-bright);">*</span></label>
+            <input type="text" class="form-control" id="custName" placeholder="Nama Pemesan (Contoh: Johannes Situmorang)" required style="margin-bottom: 10px;">
+            <select class="form-select" id="churchSelect" required>
+              <option value="" disabled selected>-- Pilih 1 dari 13 Gereja / Kontingen --</option>
+              <option value="GKP YERUEL">1. GKP YERUEL</option>
+              <option value="HKBP JATIWARINGIN">2. HKBP JATIWARINGIN</option>
+              <option value="HKBP PULOMAS">3. HKBP PULOMAS</option>
+              <option value="HKBP JATISAMPURNA">4. HKBP JATISAMPURNA</option>
+              <option value="HKBP CIBUBUR">5. HKBP CIBUBUR</option>
+              <option value="GPIB AGAPE">6. GPIB AGAPE</option>
+              <option value="HKBP Harjamukti">7. HKBP Harjamukti</option>
+              <option value="HKBP Cibinong">8. HKBP Cibinong</option>
+              <option value="HKBP Rawamangun">9. HKBP Rawamangun</option>
+              <option value="HKBP Kebon Jeruk">10. HKBP Kebon Jeruk</option>
+              <option value="HKBP Tomang Barat">11. HKBP Tomang Barat</option>
+              <option value="HKBP Kernolong">12. HKBP Kernolong</option>
+              <option value="HKBP Jatimurni">13. HKBP Jatimurni</option>
+            </select>
+          </div>
+
+          <!-- Step 5: Metode Pembayaran -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-credit-card"></i> Langkah 5: Pilih Metode Pembayaran <span style="color: var(--accent-red-bright);">*</span></label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              
+              <label class="payment-method-card selected" id="payMethodQrisLabel">
+                <input type="radio" name="payMethod" value="qris" checked style="display:none;">
+                <i class="fa-solid fa-qrcode" style="font-size: 1.6rem; color: var(--accent-gold);"></i>
+                <div style="font-weight: 800; font-size: 0.95rem; margin-top: 4px;">Dynamic QRIS</div>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Nominal Otomatis Pas</span>
+              </label>
+
+              <label class="payment-method-card" id="payMethodCashLabel">
+                <input type="radio" name="payMethod" value="cash" style="display:none;">
+                <i class="fa-solid fa-money-bill-wave" style="font-size: 1.6rem; color: var(--accent-green);"></i>
+                <div style="font-weight: 800; font-size: 0.95rem; margin-top: 4px;">CASH (Tunai)</div>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Bayar di Meja Panitia</span>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- Order Summary Box -->
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Hari Acara</span>
+              <span id="summaryDayText" style="color: #fff; font-weight: 700;">Day One (Sabtu, 12 Sep 2026)</span>
+            </div>
+            <div class="summary-row">
+              <span>Produk / Paket</span>
+              <span id="summaryCategoryText" style="color: #fff; font-weight: 700;">Tiket Masuk Wristband (Rp 10.000)</span>
+            </div>
+            <div class="summary-row">
+              <span>Jumlah Pembelian</span>
+              <span id="summaryQty">1 Item</span>
+            </div>
+            <div class="summary-total">
+              <span>Total Nominal Pembayaran</span>
+              <span id="totalPriceText">Rp 10.000</span>
+            </div>
+          </div>
+
+          <!-- Step 6: Button Confirmation -->
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem; padding: 1rem; font-size: 1.05rem;">
+            <i class="fa-solid fa-circle-check"></i> Langkah 6: Konfirmasi & Proses Pemesanan
+          </button>
+        </form>
+      </div>
+
+      <!-- Preview Physical Ticket Pickup -->
+      <div>
+        <div class="glass-card" style="margin-bottom: 1.5rem; text-align: center;">
+          <h3 class="card-title" style="justify-content: center;"><i class="fa-solid fa-ticket" style="color: var(--accent-gold);"></i> Wristband Tiket Fisik</h3>
+          <img src="gambar/66a8c20a-c6ef-4de7-b4f9-33a68f1a26df.jpg" alt="Wristband Tiket Fisik" style="width: 100%; max-width: 280px; height: auto; border-radius: 12px; border: 2px solid var(--accent-gold); margin: 0 auto 1rem;">
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Tiket berupa <strong>gelang fisik resmi (wristband)</strong> yang dapat diambil di meja panitia lokasi acara.
+          </p>
+        </div>
+
+        <div class="glass-card">
+          <h3 class="card-title"><i class="fa-solid fa-hand-holding-hand" style="color: var(--accent-gold);"></i> Pengambilan Tiket Fisik</h3>
+          <p style="color: #fff; font-size: 0.95rem; margin-bottom: 8px;">
+            <i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i> Setelah pesanan dibuat/dikonfirmasi, <strong>tiket fisik dapat diambil langsung di Meja Panitia</strong> di lokasi Wira Yudha Sport Center dengan menunjukkan Nama Pemesan atau TRX ID.
+          </p>
+          <a href="https://share.google/qqLg6wPgksgxhrown" target="_blank" class="btn btn-red btn-block" style="margin-top: 1rem;">
+            <i class="fa-solid fa-map-pin"></i> Petunjuk Google Maps Venue
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Search Booking Status Section -->
+  <section class="container" id="cek-tiket" style="padding-bottom: 6rem;">
+    <div class="glass-card" style="max-width: 750px; margin: 0 auto; text-align: center;">
+      <h3 class="card-title" style="justify-content: center;"><i class="fa-solid fa-magnifying-glass" style="color: var(--accent-gold);"></i> Cek Status Pemesanan Tiket Saya</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Masukkan <strong>Nama Pemesan</strong> atau <strong>Nomor Transaksi (TRX ID)</strong>.</p>
+
+      <div style="display: flex; gap: 10px; max-width: 540px; margin: 0 auto;">
+        <input type="text" id="searchTicketInput" class="form-control" placeholder="Ketik Nama Pemesan / TRX ID...">
+        <button id="btnSearchTicket" class="btn btn-primary"><i class="fa-solid fa-search"></i> Cari Data</button>
+      </div>
+
+      <div id="searchResultArea" style="margin-top: 1.5rem;"></div>
+    </div>
+  </section>
+
+  <!-- QRIS Payment Modal with Dynamic Nominal & Upload Proof -->
+  <div class="modal-overlay" id="qrisPaymentModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('qrisPaymentModal')">&times;</button>
+      <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 0.5rem; text-align: center;">
+        <i class="fa-solid fa-qrcode"></i> Pembayaran Dynamic QRIS Resmi
+      </h3>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+        Nomor Transaksi: <strong id="qrisOrderId" style="color: #fff;">TRX-XXXXXX</strong>
+      </p>
+
+      <!-- Dynamic QRIS Amount Banner -->
+      <div style="background: linear-gradient(135deg, var(--accent-red), var(--primary-red)); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 1.25rem; text-align: center; margin-bottom: 1rem; box-shadow: 0 0 20px rgba(255,215,0,0.3);">
+        <span style="font-size: 0.8rem; color: #FFF; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">NOMINAL OTOMATIS QRIS:</span>
+        <div id="qrisDynamicAmount" style="font-size: 2.4rem; font-weight: 900; color: var(--accent-gold); line-height: 1.1; margin: 6px 0;">Rp 0</div>
+        <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Nominal pembayaran otomatis sesuai total transaksi (Pembeli tidak perlu mengetik nominal secara manual)</span>
+      </div>
+
+      <div class="payment-qris-wrap">
+        <img src="gambar/qris_official.jpg" alt="QRIS Resmi Parheheon 2026">
+        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-top: 6px;">SEKSI DANA PARHEHEON 2026</p>
+        <span style="font-size: 0.75rem; color: #555;">NMID: ID1026537234803</span>
+      </div>
+
+      <!-- Upload Bukti Pembayaran -->
+      <div style="background: rgba(255,255,255,0.05); padding: 1.25rem; border-radius: 12px; border: 1px dashed var(--border-color); margin-bottom: 1rem;">
+        <label class="form-label" style="margin-bottom: 6px;"><i class="fa-solid fa-upload"></i> Upload Bukti Pembayaran QRIS (Opsional/Saran)</label>
+        <input type="file" id="paymentProofInput" class="form-control" accept="image/*">
+        <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 6px;">
+          Status awal: <strong>Menunggu Verifikasi</strong>. Panitia akan mengonfirmasi bukti pembayaran Anda.
+        </span>
+      </div>
+
+      <button id="btnSubmitQrisProof" class="btn btn-primary btn-block" style="padding: 1rem; font-size: 1rem;">
+        <i class="fa-solid fa-paper-plane"></i> Kirim Bukti & Selesaikan Pemesanan
+      </button>
+    </div>
+  </div>
+
+  <!-- Cash Payment Instruction Modal -->
+  <div class="modal-overlay" id="cashPaymentModal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close" onclick="closeModal('cashPaymentModal')">&times;</button>
+      <div class="brand-icon" style="margin: 0 auto 1rem; width: 64px; height: 64px; border-radius: 50%; font-size: 2rem; background: var(--accent-green); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(16,185,129,0.4);">
+        <i class="fa-solid fa-money-bill-wave"></i>
+      </div>
+      <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 0.5rem;">
+        Instruksi Pembayaran CASH (Tunai)
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        Nomor Transaksi: <strong id="cashOrderId" style="color: #fff;">TRX-XXXXXX</strong>
+      </p>
+
+      <div class="summary-box" style="text-align: left; margin-bottom: 1.25rem;">
+        <div class="summary-row"><span>Nama Pemesan:</span> <strong id="cashCustName" style="color: #fff;">-</strong></div>
+        <div class="summary-row"><span>Hari Acara:</span> <strong id="cashEventDay" style="color: #fff;">-</strong></div>
+        <div class="summary-row"><span>Gereja / Kontingen:</span> <strong id="cashChurch" style="color: #fff;">-</strong></div>
+        <div class="summary-total"><span>Total Pembayaran Tunai:</span> <strong id="cashTotalPay" style="color: var(--accent-gold);">Rp 0</strong></div>
+      </div>
+
+      <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 1.1rem; border-radius: 12px; font-size: 0.9rem; color: #fff; margin-bottom: 1.5rem; text-align: left;">
+        <i class="fa-solid fa-circle-info" style="color: var(--accent-green);"></i> <strong>Instruksi Panitia:</strong><br>
+        Silakan lakukan pembayaran langsung secara tunai kepada <strong>Panitia di Meja Pemesanan Tiket</strong> di venue Wira Yudha Sport Center dengan menyebutkan Nama Pemesan: <strong id="cashCustNameText" style="color: var(--accent-gold);"></strong>. Panitia akan mengonfirmasi pembayaran Anda pada sistem admin.
+      </div>
+
+      <button onclick="closeModal('cashPaymentModal'); showPickupNoticeModalFromCash();" class="btn btn-primary btn-block" style="padding: 0.9rem;">Saya Mengerti & Lanjutkan</button>
+    </div>
+  </div>
+
+  <!-- Physical Ticket Pickup Notification Modal (Strict: NO E-TICKET / NO QR CODE NEEDED) -->
+  <div class="modal-overlay" id="ticketPickupModal">
+    <div class="modal-card" style="text-align: center; max-width: 540px;">
+      <button class="modal-close" onclick="closeModal('ticketPickupModal')">&times;</button>
+      
+      <div style="width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; color: var(--text-dark); margin: 0 auto 1rem; box-shadow: 0 0 25px rgba(255,215,0,0.5);">
+        <i class="fa-solid fa-ticket-simple"></i>
+      </div>
+
+      <h3 style="font-size: 1.4rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 0.5rem;">
+        PEMBERITAHUAN PENGAMBILAN TIKET
+      </h3>
+      
+      <div style="background: rgba(255, 215, 0, 0.15); border: 2px dashed var(--accent-gold); border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0; text-align: left;">
+        <p style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 8px;">
+          <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> Informasi Pengambilan:
+        </p>
+        <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.5;">
+          "Pembayaran berhasil dicatat/dikonfirmasi. <strong>Tiket fisik (wristband) Anda dapat diambil langsung di meja panitia</strong> di lokasi acara dengan menyebutkan <strong>Nama Pemesan</strong> atau <strong>Nomor Transaksi</strong>."
+        </p>
+      </div>
+
+      <div class="summary-box" style="text-align: left; margin-bottom: 1.5rem;">
+        <div class="summary-row"><span>Nomor Transaksi:</span> <strong id="pickupOrderId" style="color: var(--accent-gold);">TRX-XXXXXX</strong></div>
+        <div class="summary-row"><span>Nama Pemesan:</span> <strong id="pickupCustName" style="color: #fff;">-</strong></div>
+        <div class="summary-row"><span>Hari Event:</span> <strong id="pickupDay" style="color: #fff;">-</strong></div>
+        <div class="summary-row"><span>Status Transaksi:</span> <span id="pickupStatusBadge" class="badge badge-pending">MENUNGGU VERIFIKASI</span></div>
+      </div>
+
+      <button onclick="closeModal('ticketPickupModal')" class="btn btn-primary btn-block" style="padding: 0.9rem;">Selesai</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Panitia Parheheon Naposo Bulung HKBP Cibubur (<span class="shine-glow-text">SHINE</span> — TOMBUR Vol 2). All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

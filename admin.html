@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Parheheon HKBP Cibubur (SHINE TOMBUR Vol 2)</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="gambar/logo_parheheon.png" alt="Logo Parheheon HKBP Cibubur (Gambar 3)" class="brand-logo-img">
+      <div>
+        <span class="shine-glow-text" style="font-size: 1.25rem;">PANITIA ADMIN</span>
+        <div style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 900; letter-spacing: 1px;">SHINE PARHEHEON HKBP CIBUBUR</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#stats" class="nav-link active">Overview</a></li>
+      <li><a href="#transactions" class="nav-link">Pemesanan Tiket</a></li>
+      <li><a href="#stock" class="nav-link">Stok Produk</a></li>
+      <li><a href="#reports" class="nav-link">Laporan & Export Excel</a></li>
+      <li><a href="index.html" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-globe"></i> Halaman Publik</a></li>
+      <li><button id="btnLogout" class="btn btn-danger" style="padding: 0.4rem 1rem; font-size: 0.85rem; display: none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+    </ul>
+  </nav>
+
+  <!-- Login Modal / Screen -->
+  <div class="modal-overlay active" id="loginModal" style="z-index: 3000;">
+    <div class="modal-card" style="max-width: 420px; text-align: center;">
+      <img src="gambar/logo_parheheon.png" alt="Logo Parheheon (Gambar 3)" style="width: 84px; height: 84px; border-radius: 50%; border: 2px solid var(--accent-gold); margin: 0 auto 1rem; display: block; box-shadow: 0 0 15px rgba(255,215,0,0.5);">
+      <h2 style="font-weight: 900; color: var(--accent-gold); margin-bottom: 0.5rem;" class="shine-glow-text">Login Dashboard Panitia</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Masuk untuk memverifikasi pembayaran & mencatat penyerahan tiket fisik.</p>
+
+      <form id="adminLoginForm">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Username</label>
+          <input type="text" id="adminUser" class="form-control" value="admin" required>
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Password</label>
+          <input type="password" id="adminPass" class="form-control" value="admin123" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; margin-top: 1rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Admin Content Area -->
+  <main class="container admin-layout" id="adminMainContent" style="display: none;">
+
+    <!-- Analytics Dashboard Stats (Actual Database Math) -->
+    <section id="stats">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--accent-gold);">Dashboard Rekapitulasi Keuangan</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Perhitungan otomatis dari database aktual transaksi (Tanpa data dummy).</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="btnResetDatabase" class="btn btn-red" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;"><i class="fa-solid fa-trash-can"></i> Clear All Data</button>
+          <button id="btnRefreshData" class="btn btn-secondary"><i class="fa-solid fa-rotate"></i> Refresh Data</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-gold);"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalIncome">Rp 0</div>
+            <div class="stat-label">Total Uang Masuk (Lunas Only)</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-receipt"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalOrdersValue">Rp 0</div>
+            <div class="stat-label">Total Nilai Pesanan</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-gold);"><i class="fa-solid fa-qrcode"></i></div>
+          <div>
+            <div class="stat-val" id="statQrisIncome">Rp 0</div>
+            <div class="stat-label">QRIS Uang Masuk (Lunas)</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-green);"><i class="fa-solid fa-money-bill-wave"></i></div>
+          <div>
+            <div class="stat-val" id="statCashIncome">Rp 0</div>
+            <div class="stat-label">Cash Uang Masuk (Lunas)</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalTickets">0</div>
+            <div class="stat-label">Total Tiket Terjual</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+          <div>
+            <div class="stat-val" id="statTotalProducts">0</div>
+            <div class="stat-label">Total Produk Terjual</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: #FACC15;"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div>
+            <div class="stat-val" id="statPendingCount">0</div>
+            <div class="stat-label">Transaksi Pending</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-box-open"></i></div>
+          <div>
+            <div class="stat-val" id="statPickedUpCount">0</div>
+            <div class="stat-label">Tiket Sudah Diambil</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-red-bright);"><i class="fa-solid fa-clock"></i></div>
+          <div>
+            <div class="stat-val" id="statNotPickedUpCount">0</div>
+            <div class="stat-label">Tiket Belum Diambil</div>
+          </div>
+        </div>
+
+        <!-- Real-Time Ticket Quota Cards -->
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-gold);"><i class="fa-solid fa-calendar-day"></i></div>
+          <div>
+            <div class="stat-val" id="statDay1Quota">200</div>
+            <div class="stat-label">Sisa Kuota Tiket Day 1 (dari 200)</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="color: var(--accent-gold);"><i class="fa-solid fa-calendar-day"></i></div>
+          <div>
+            <div class="stat-val" id="statDay2Quota">100</div>
+            <div class="stat-label">Sisa Kuota Tiket Day 2 (dari 100)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transactions Management Table -->
+    <section id="transactions" style="margin-bottom: 4rem;">
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <h3 class="card-title" style="margin-bottom: 0;"><i class="fa-solid fa-list-check" style="color: var(--accent-gold);"></i> Data Pemesanan Tiket & Produk</h3>
+          
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="adminSearchName" class="form-control" placeholder="Cari Nama / TRX ID..." style="width: 200px;">
+            
+            <select class="form-select" id="filterDay" style="width: auto;">
+              <option value="all">Semua Hari Event</option>
+              <option value="day1">Day One (Sabtu 12 Sep)</option>
+              <option value="day2">Day Two (Minggu 13 Sep)</option>
+              <option value="both">Terusan (2 Hari)</option>
+            </select>
+
+            <select class="form-select" id="filterMethod" style="width: auto;">
+              <option value="all">Semua Metode</option>
+              <option value="qris">Dynamic QRIS</option>
+              <option value="cash">CASH (Tunai)</option>
+            </select>
+
+            <select class="form-select" id="filterStatus" style="width: auto;">
+              <option value="all">Semua Status Bayar</option>
+              <option value="menunggu_verifikasi">Menunggu Verifikasi (QRIS)</option>
+              <option value="menunggu_pembayaran">Menunggu Pembayaran (Cash)</option>
+              <option value="lunas">Lunas</option>
+              <option value="ditolak">Ditolak</option>
+            </select>
+
+            <select class="form-select" id="filterPickup" style="width: auto;">
+              <option value="all">Semua Status Pengambilan</option>
+              <option value="tiket_diambil">Sudah Diambil</option>
+              <option value="belum_diambil">Belum Diambil</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>No. TRX</th>
+                <th>Nama Pemesan</th>
+                <th>Hari Event</th>
+                <th>Asal Gereja / Kontingen</th>
+                <th>Produk & Qty</th>
+                <th>Metode & Total</th>
+                <th>Status Pembayaran</th>
+                <th>Pengambilan Tiket</th>
+                <th>Aksi Panitia</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Stock & Sales Report -->
+    <section id="stock" style="margin-bottom: 4rem;">
+      <div class="glass-card">
+        <h3 class="card-title"><i class="fa-solid fa-boxes-stacked" style="color: var(--accent-gold);"></i> Rekapitulasi Penjualan Produk & Sisa Stok Kuota</h3>
+        
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Nama Produk</th>
+                <th>Item Terjual (Day One)</th>
+                <th>Item Terjual (Day Two)</th>
+                <th>Total Terjual</th>
+                <th>Sisa Stok Kuota</th>
+                <th>Total Omset (Lunas Only)</th>
+              </tr>
+            </thead>
+            <tbody id="productStockReportBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Financial Reports & Export Excel Section -->
+    <section id="reports">
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 class="card-title" style="margin-bottom: 4px;"><i class="fa-solid fa-file-excel" style="color: var(--accent-gold);"></i> Laporan Keuangan & Export Excel</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Unduh laporan detail transaksi lunas untuk pembukuan seksi dana & panitia.</p>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="exportReportToCsv('day1')" class="btn btn-secondary" style="font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Excel Day One (12 Sep)</button>
+            <button onclick="exportReportToCsv('day2')" class="btn btn-secondary" style="font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Excel Day Two (13 Sep)</button>
+            <button onclick="exportReportToCsv('all')" class="btn btn-primary" style="font-size: 0.85rem;"><i class="fa-solid fa-download"></i> Excel Laporan Keseluruhan</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Laporan Hari Event</th>
+                <th>Tiket Terjual</th>
+                <th>Total Transaksi</th>
+                <th>Total QRIS (Lunas)</th>
+                <th>Total Cash (Lunas)</th>
+                <th>TOTAL UANG MASUK (LUNAS)</th>
+                <th>Transaksi Pending</th>
+              </tr>
+            </thead>
+            <tbody id="dailyReportsBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Admin Verification Modal -->
+  <div class="modal-overlay" id="adminVerifyModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('adminVerifyModal')">&times;</button>
+      <h3 style="font-size: 1.3rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 1rem; text-align: center;">
+        Verifikasi Pembayaran Panitia
+      </h3>
+
+      <div id="verifyDetailsContent"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+        <button id="btnApprovePayment" class="btn btn-success btn-block" style="padding: 0.85rem;"><i class="fa-solid fa-check"></i> Setujui Pembayaran (Lunas)</button>
+        <button id="btnRejectPayment" class="btn btn-danger btn-block" style="padding: 0.85rem;"><i class="fa-solid fa-xmark"></i> Tolak Transaksi</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
