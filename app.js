@@ -458,16 +458,11 @@ function showQrisModal(order) {
   document.getElementById('qrisOrderId').textContent = order.id;
   document.getElementById('qrisDynamicAmount').textContent = `Rp ${order.total.toLocaleString('id-ID')}`;
 
-  // Render Official Authentic Scannable QRIS Barcode Image
+  // Render Full Size Official Authentic QRIS Barcode Image
   const canvasWrap = document.getElementById('qrisInteractiveCanvas');
   if (canvasWrap) {
     canvasWrap.innerHTML = `
-      <div style="text-align: center; width: 100%;">
-        <img src="gambar/qris_official.jpg" alt="QRIS Resmi Parheheon HKBP Cibubur" style="width: 220px; max-width: 100%; height: auto; border-radius: 10px; border: 2px solid var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: block; margin: 0 auto 8px;">
-        <a href="gambar/qris_official.jpg" download="QRIS_Official_Parheheon_HKBP_Cibubur.jpg" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.8rem; width: auto; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-          <i class="fa-solid fa-download"></i> Simpan Gambar QRIS ke Galeri HP
-        </a>
-      </div>
+      <img src="gambar/qris_official.jpg" alt="Gambar QRIS Asli Parheheon HKBP Cibubur" style="width: 320px; max-width: 100%; height: auto; border-radius: 12px; border: 2.5px solid var(--accent-gold); box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: block; margin: 0 auto;">
     `;
   }
 
