@@ -125,6 +125,229 @@ function renderProductCards() {
   setupPricingCategorySelector();
 }
 
+function setupPricingCategorySelector() {
+  const options = document.querySelectorAll('.pricing-card-option');
+  const inputCategory = document.getElementById('selectedCategory');
+  const inputPrice = document.getElementById('selectedUnitPrice');
+
+  options.forEach(opt => {
+    opt.onclick = () => {
+      options.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      const category = opt.getAttribute('data-type');
+      const price = opt.getAttribute('data-price');
+      if (inputCategory) inputCategory.value = category;
+      if (inputPrice) inputPrice.value = price;
+      calculateTotalSummary();
+    };
+  });
+}
+
+function selectProductFromCatalog(categoryKey) {
+  const options = document.querySelectorAll('.pricing-card-option');
+  const inputCategory = document.getElementById('selectedCategory');
+  const inputPrice = document.getElementById('selectedUnitPrice');
+
+  options.forEach(opt => {
+    if (opt.getAttribute('data-type') === categoryKey) {
+      opt.classList.add('selected');
+      const price = opt.getAttribute('data-price');
+      if (inputCategory) inputCategory.value = categoryKey;
+      if (inputPrice) inputPrice.value = price;
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+  calculateTotalSummary();
+}
+
+function setupPaymentMethodSelector() {
+  const qrisLabel = document.getElementById('payMethodQrisLabel');
+  const cashLabel = document.getElementById('payMethodCashLabel');
+  const radios = document.querySelectorAll('input[name="payMethod"]');
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (qrisLabel) qrisLabel.classList.remove('selected');
+      if (cashLabel) cashLabel.classList.remove('selected');
+
+      if (radio.value === 'qris' && qrisLabel) {
+        qrisLabel.classList.add('selected');
+      } else if (radio.value === 'cash' && cashLabel) {
+        cashLabel.classList.add('selected');
+      }
+    });
+  });
+}
+
+function calculateTotalSummary() {
+  const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+  const categoryKey = document.getElementById('selectedCategory')?.value || 'tiket';
+  const unitPrice = parseInt(document.getElementById('selectedUnitPrice')?.value) || 10000;
+  const qty = parseInt(document.getElementById('ticketQty')?.value) || 1;
+
+  const summaryDayText = document.getElementById('summaryDayText');
+  const summaryCategoryText = document.getElementById('summaryCategoryText');
+  const summaryQty = document.getElementById('summaryQty');
+  const totalPriceText = document.getElementById('totalPriceText');
+
+  if (summaryDayText) summaryDayText.textContent = DAY_NAMES[dayKey] || dayKey;
+  if (summaryCategoryText) summaryCategoryText.textContent = `${PRODUCT_CATALOG[categoryKey]?.name || categoryKey} (Rp ${unitPrice.toLocaleString('id-ID')})`;
+  if (summaryQty) summaryQty.textContent = `${qty} Item`;
+  
+  const grandTotal = unitPrice * qty;
+  if (totalPriceText) totalPriceText.textContent = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+}
+
+function setupFormListeners() {
+  const form = document.getElementById('orderForm');
+  if (!form) return;
+
+  const eventDaySelect = document.getElementById('eventDaySelect');
+  const ticketQty = document.getElementById('ticketQty');
+  const btnMinus = document.getElementById('btnMinus');
+  const btnPlus = document.getElementById('btnPlus');
+
+  if (eventDaySelect) {
+    eventDaySelect.addEventListener('change', () => {
+      renderProductCards();
+      updateLiveStockDisplay();
+      calculateTotalSummary();
+    });
+  }
+
+  if (btnMinus && ticketQty) {
+    btnMinus.onclick = () => {
+      let q = parseInt(ticketQty.value) || 1;
+      if (q > 1) {
+        ticketQty.value = q - 1;
+        calculateTotalSummary();
+      }
+    };
+  }
+
+  if (btnPlus && ticketQty) {
+    btnPlus.onclick = () => {
+      let q = parseInt(ticketQty.value) || 1;
+      const stock = getStock();
+      const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+      const category = document.getElementById('selectedCategory')?.value || 'tiket';
+
+      let maxAvailable = 99;
+      if (category === 'tiket' || category === 'bundling') {
+        if (dayKey === 'day1') maxAvailable = stock['tiket_day1'] ?? 200;
+        else if (dayKey === 'day2') maxAvailable = stock['tiket_day2'] ?? 100;
+        else maxAvailable = Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100);
+      }
+
+      if (q < maxAvailable) {
+        ticketQty.value = q + 1;
+        calculateTotalSummary();
+      } else {
+        showToast(`Stok kuota tiket tersisa ${maxAvailable} tiket!`, 'fa-triangle-exclamation');
+      }
+    };
+  }
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('custName')?.value.trim();
+    const church = document.getElementById('churchSelect')?.value;
+    const day = document.getElementById('eventDaySelect')?.value || 'day1';
+    const category = document.getElementById('selectedCategory')?.value || 'tiket';
+    const unitPrice = parseInt(document.getElementById('selectedUnitPrice')?.value) || 10000;
+    const qty = parseInt(document.getElementById('ticketQty')?.value) || 1;
+    const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'qris';
+
+    if (!name) {
+      alert('Silakan masukkan Nama Pemesan.');
+      document.getElementById('custName')?.focus();
+      return;
+    }
+
+    if (!church) {
+      alert('Silakan pilih Asal Gereja / Kontingen Anda.');
+      document.getElementById('churchSelect')?.focus();
+      return;
+    }
+
+    // Check stock availability
+    const stock = getStock();
+    if (category === 'tiket' || category === 'bundling') {
+      if (day === 'day1' && ((stock['tiket_day1'] ?? 200) < qty)) {
+        alert(`Kuota Tiket Day One tersisa ${stock['tiket_day1']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
+        return;
+      }
+      if (day === 'day2' && ((stock['tiket_day2'] ?? 100) < qty)) {
+        alert(`Kuota Tiket Day Two tersisa ${stock['tiket_day2']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
+        return;
+      }
+      if (day === 'both') {
+        if ((stock['tiket_day1'] ?? 200) < qty || (stock['tiket_day2'] ?? 100) < qty) {
+          alert(`Kuota Tiket Terusan tidak mencukupi.`);
+          return;
+        }
+      }
+    }
+
+    // Deduct stock
+    if (category === 'tiket' || category === 'bundling') {
+      if (day === 'day1') {
+        stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
+      } else if (day === 'day2') {
+        stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
+      } else if (day === 'both') {
+        stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
+        stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
+      }
+      if (category === 'bundling') {
+        stock['kipas'] = Math.max(0, (stock['kipas'] ?? 200) - qty);
+      }
+    } else if (category === 'kipas') {
+      stock['kipas'] = Math.max(0, (stock['kipas'] ?? 200) - qty);
+    }
+
+    saveStock(stock);
+    updateLiveStockDisplay();
+
+    // Generate TRX ID
+    const trxId = 'TRX-' + Math.floor(100000 + Math.random() * 900000);
+    const newOrder = {
+      id: trxId,
+      name: name,
+      church: church,
+      day: day,
+      category: category,
+      productName: PRODUCT_CATALOG[category]?.name || category,
+      unitPrice: unitPrice,
+      qty: qty,
+      total: unitPrice * qty,
+      payMethod: payMethod,
+      status: payMethod === 'qris' ? 'menunggu_verifikasi' : 'menunggu_pembayaran',
+      pickupStatus: 'belum_diambil',
+      proofImage: null,
+      createdAt: new Date().toISOString()
+    };
+
+    const orders = getOrders();
+    orders.unshift(newOrder);
+    saveOrders(orders);
+    lastCreatedOrder = newOrder;
+
+    showToast(`Pemesanan ${trxId} Berhasil!`, 'fa-circle-check');
+
+    // Reset Form
+    if (document.getElementById('custName')) document.getElementById('custName').value = '';
+
+    if (payMethod === 'qris') {
+      showQrisModal(newOrder);
+    } else {
+      showCashModal(newOrder);
+    }
+  };
+}
+
 function updateLiveStockDisplay() {
   const stock = getStock();
   const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
