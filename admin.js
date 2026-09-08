@@ -45,7 +45,22 @@ function generateCaptcha() {
   }
 }
 
+function initStorage() {
+  if (!localStorage.getItem('parheheon_orders')) {
+    localStorage.setItem('parheheon_orders', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('parheheon_stock')) {
+    const initialStock = {
+      'tiket_day1': 200,
+      'tiket_day2': 100,
+      'kipas': 200
+    };
+    localStorage.setItem('parheheon_stock', JSON.stringify(initialStock));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initStorage();
   setupAuth();
   setupFilters();
 });
