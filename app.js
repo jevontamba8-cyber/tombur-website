@@ -95,14 +95,13 @@ function renderProductCards() {
   const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
 
   let stockTiketVal = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (dayKey === 'day2' ? (stock['tiket_day2'] ?? 100) : Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100));
-  let stockKipasVal = stock['kipas'] ?? 200;
 
   container.innerHTML = `
     <div class="pricing-card-option selected" data-type="tiket" data-price="10000">
       <img src="${PRODUCT_CATALOG['tiket'].image}" alt="Tiket Wristband" class="product-card-img">
       <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['tiket'].name}</div>
       <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 10.000</div>
-      <span class="stock-badge" id="stockBadgeTiket">Kuota: ${stockTiketVal}</span>
+      <span class="stock-badge" id="stockBadgeTiket">Kuota Tiket: ${stockTiketVal}</span>
     </div>
 
     <div class="pricing-card-option" data-type="bundling" data-price="15000">
@@ -112,14 +111,14 @@ function renderProductCards() {
       </div>
       <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['bundling'].name}</div>
       <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 15.000</div>
-      <span class="stock-badge" style="background: rgba(255,215,0,0.2); color: var(--accent-gold);" id="stockBadgeBundling">Kuota: ${Math.min(stockTiketVal, stockKipasVal)}</span>
+      <span class="stock-badge" style="background: rgba(255,215,0,0.2); color: var(--accent-gold);" id="stockBadgeBundling">Kuota Tiket: ${stockTiketVal}</span>
     </div>
 
     <div class="pricing-card-option" data-type="kipas" data-price="10000">
       <img src="${PRODUCT_CATALOG['kipas'].image}" alt="Kipas Official" class="product-card-img">
       <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['kipas'].name}</div>
       <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 10.000</div>
-      <span class="stock-badge" id="stockBadgeKipas">Stok: ${stockKipasVal}</span>
+      <span class="stock-badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">Merchandise Official</span>
     </div>
   `;
 
@@ -131,16 +130,12 @@ function updateLiveStockDisplay() {
   const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
 
   let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (dayKey === 'day2' ? (stock['tiket_day2'] ?? 100) : Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100));
-  let sKipas = stock['kipas'] ?? 200;
-  let sBundling = Math.min(sTiket, sKipas);
 
   const badgeT = document.getElementById('stockBadgeTiket');
   const badgeB = document.getElementById('stockBadgeBundling');
-  const badgeK = document.getElementById('stockBadgeKipas');
 
   if (badgeT) badgeT.textContent = `Kuota Tiket: ${sTiket}`;
-  if (badgeB) badgeB.textContent = `Kuota Bundling: ${sBundling}`;
-  if (badgeK) badgeK.textContent = `Stok Kipas: ${sKipas}`;
+  if (badgeB) badgeB.textContent = `Kuota Tiket: ${sTiket}`;
 
   checkLowStockAlert();
 }
