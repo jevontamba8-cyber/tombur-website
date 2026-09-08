@@ -427,28 +427,36 @@ function compressImageFile(file, callback) {
   reader.readAsDataURL(file);
 }
 
+function copyQrisAmount() {
+  if (lastCreatedOrder) {
+    const amtStr = lastCreatedOrder.total.toString();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(amtStr).then(() => {
+        showToast(`Nominal Rp ${lastCreatedOrder.total.toLocaleString('id-ID')} berhasil disalin!`, 'fa-copy');
+      }).catch(() => {
+        showToast(`Nominal: Rp ${lastCreatedOrder.total.toLocaleString('id-ID')}`);
+      });
+    } else {
+      showToast(`Nominal: Rp ${lastCreatedOrder.total.toLocaleString('id-ID')}`);
+    }
+  }
+}
+
 function showQrisModal(order) {
   document.getElementById('qrisOrderId').textContent = order.id;
   document.getElementById('qrisDynamicAmount').textContent = `Rp ${order.total.toLocaleString('id-ID')}`;
 
-  // Interactive Dynamic Canvas QR Code Generator
+  // Render Official Authentic Scannable QRIS Barcode Image
   const canvasWrap = document.getElementById('qrisInteractiveCanvas');
   if (canvasWrap) {
-    canvasWrap.innerHTML = '';
-    const qrPayloadStr = `00020101021226680016ID.CO.QRIS.WWW0118936009140000000000520458125303360540${order.total}5802ID5923SEKSI DANA PARHEHEON 20266007CIBUBUR6304`;
-    
-    if (window.QRCode) {
-      new QRCode(canvasWrap, {
-        text: qrPayloadStr,
-        width: 170,
-        height: 170,
-        colorDark: "#120202",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    } else {
-      canvasWrap.innerHTML = `<img src="gambar/qris_official.jpg" alt="QRIS Resmi" style="max-width:170px; height:auto; border-radius:6px;">`;
-    }
+    canvasWrap.innerHTML = `
+      <div style="text-align: center; width: 100%;">
+        <img src="gambar/qris_official.jpg" alt="QRIS Resmi Parheheon HKBP Cibubur" style="width: 220px; max-width: 100%; height: auto; border-radius: 10px; border: 2px solid var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: block; margin: 0 auto 8px;">
+        <a href="gambar/qris_official.jpg" download="QRIS_Official_Parheheon_HKBP_Cibubur.jpg" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.8rem; width: auto; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+          <i class="fa-solid fa-download"></i> Simpan Gambar QRIS ke Galeri HP
+        </a>
+      </div>
+    `;
   }
 
   const btnSubmitProof = document.getElementById('btnSubmitQrisProof');

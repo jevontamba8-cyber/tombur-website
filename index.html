@@ -458,18 +458,21 @@
 
       <!-- Dynamic QRIS Amount Banner -->
       <div style="background: linear-gradient(135deg, var(--accent-red), var(--primary-red)); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 1.25rem; text-align: center; margin-bottom: 1rem; box-shadow: 0 0 20px rgba(255,215,0,0.3);">
-        <span style="font-size: 0.8rem; color: #FFF; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">NOMINAL OTOMATIS QRIS:</span>
+        <span style="font-size: 0.8rem; color: #FFF; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">TOTAL NOMINAL PEMBAYARAN:</span>
         <div id="qrisDynamicAmount" style="font-size: 2.4rem; font-weight: 900; color: var(--accent-gold); line-height: 1.1; margin: 6px 0;">Rp 0</div>
-        <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Nominal pembayaran otomatis sesuai total transaksi (Pembeli tidak perlu mengetik nominal secara manual)</span>
+        <button type="button" onclick="copyQrisAmount()" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.85rem; margin-bottom: 8px; background: rgba(0,0,0,0.4); border-color: var(--accent-gold); color: var(--accent-gold); display: inline-flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-copy"></i> Salin Nominal Transaksi
+        </button>
+        <span style="font-size: 0.78rem; color: #FFE4E6; font-weight: 600; display: block;"><i class="fa-solid fa-circle-info"></i> Scan Barcode QRIS Resmi di bawah ini dengan M-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, Dana, ShopeePay, LinkAja)</span>
       </div>
 
       <div class="payment-qris-wrap" style="text-align: center; padding: 1.25rem; background: #fff; border-radius: 14px; margin: 1rem 0; border: 2px solid var(--accent-gold); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-        <p style="font-size: 0.85rem; color: #333; font-weight: 800; margin-bottom: 8px;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> SCAN QR CODE DINAMIS DENGAN HP ANDA:</p>
+        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-bottom: 10px;"><i class="fa-solid fa-qrcode" style="color: var(--primary-red);"></i> BARCODE QRIS RESMI PARHEHEON 2026:</p>
         
-        <!-- Interactive Canvas QR Code generated dynamically by QRCode.js -->
-        <div id="qrisInteractiveCanvas" style="display: flex; justify-content: center; align-items: center; background: #fff; padding: 10px; border-radius: 10px; margin: 0 auto; width: 190px; height: 190px;"></div>
+        <!-- Official Authentic Scannable QRIS Container -->
+        <div id="qrisInteractiveCanvas" style="display: flex; justify-content: center; align-items: center; background: #fff; padding: 6px; border-radius: 10px; margin: 0 auto;"></div>
         
-        <p style="font-size: 0.88rem; color: #111; font-weight: 900; margin-top: 10px;">SEKSI DANA PARHEHEON 2026</p>
+        <p style="font-size: 0.9rem; color: #111; font-weight: 900; margin-top: 10px;">SEKSI DANA PARHEHEON 2026</p>
         <span style="font-size: 0.75rem; color: #555; font-weight: 700;">NMID: ID1026537234803</span>
       </div>
 
