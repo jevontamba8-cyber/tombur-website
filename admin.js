@@ -30,6 +30,21 @@ function saveStock(stock) {
   localStorage.setItem('parheheon_stock', JSON.stringify(stock));
 }
 
+let currentCaptcha = '';
+
+function generateCaptcha() {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let code = '';
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  currentCaptcha = code;
+  const display = document.getElementById('captchaDisplay');
+  if (display) {
+    display.textContent = code;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   setupAuth();
   setupFilters();
@@ -40,6 +55,14 @@ function setupAuth() {
   const loginModal = document.getElementById('loginModal');
   const adminContent = document.getElementById('adminMainContent');
   const btnLogout = document.getElementById('btnLogout');
+  const btnRefreshCaptcha = document.getElementById('btnRefreshCaptcha');
+  const errorAlert = document.getElementById('loginErrorAlert');
+  const errorMsg = document.getElementById('loginErrorMsg');
+
+  generateCaptcha();
+  if (btnRefreshCaptcha) {
+    btnRefreshCaptcha.addEventListener('click', generateCaptcha);
+  }
 
   if (sessionStorage.getItem('admin_logged_in') === 'true') {
     loginModal.classList.remove('active');
@@ -52,15 +75,42 @@ function setupAuth() {
     e.preventDefault();
     const u = document.getElementById('adminUser').value.trim();
     const p = document.getElementById('adminPass').value.trim();
+    const inputCaptcha = document.getElementById('adminCaptchaInput')?.value.trim().toUpperCase();
 
+    // 1. CAPTCHA Validation
+    if (inputCaptcha !== currentCaptcha) {
+      if (errorAlert && errorMsg) {
+        errorMsg.textContent = 'Kode CAPTCHA tidak sesuai! Silakan coba lagi.';
+        errorAlert.style.display = 'block';
+      } else {
+        alert('Kode CAPTCHA tidak sesuai! Silakan coba lagi.');
+      }
+      generateCaptcha();
+      const captchaInput = document.getElementById('adminCaptchaInput');
+      if (captchaInput) captchaInput.value = '';
+      return;
+    }
+
+    // 2. Authentication Check
     if (u === 'admin' && p === 'admin123') {
+      if (errorAlert) errorAlert.style.display = 'none';
       sessionStorage.setItem('admin_logged_in', 'true');
       loginModal.classList.remove('active');
       adminContent.style.display = 'block';
       btnLogout.style.display = 'inline-flex';
       loadDashboardData();
     } else {
-      alert('Username atau Password salah! (Default: admin / admin123)');
+      if (errorAlert && errorMsg) {
+        errorMsg.textContent = 'Username atau Password yang Anda masukkan salah!';
+        errorAlert.style.display = 'block';
+      } else {
+        alert('Username atau Password yang Anda masukkan salah!');
+      }
+      generateCaptcha();
+      const captchaInput = document.getElementById('adminCaptchaInput');
+      const passInput = document.getElementById('adminPass');
+      if (captchaInput) captchaInput.value = '';
+      if (passInput) passInput.value = '';
     }
   });
 

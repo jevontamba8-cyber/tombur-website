@@ -111,7 +111,7 @@ function renderProductCards() {
       </div>
       <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['bundling'].name}</div>
       <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 15.000</div>
-      <span class="stock-badge" style="background: rgba(255,215,0,0.2); color: var(--accent-gold);" id="stockBadgeBundling">Kuota Tiket: ${stockTiketVal}</span>
+      <span class="stock-badge" style="background: rgba(255,215,0,0.15); color: var(--accent-gold);">Paket Hemat (Tiket + Kipas)</span>
     </div>
 
     <div class="pricing-card-option" data-type="kipas" data-price="10000">
@@ -132,10 +132,7 @@ function updateLiveStockDisplay() {
   let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (dayKey === 'day2' ? (stock['tiket_day2'] ?? 100) : Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100));
 
   const badgeT = document.getElementById('stockBadgeTiket');
-  const badgeB = document.getElementById('stockBadgeBundling');
-
   if (badgeT) badgeT.textContent = `Kuota Tiket: ${sTiket}`;
-  if (badgeB) badgeB.textContent = `Kuota Tiket: ${sTiket}`;
 
   checkLowStockAlert();
 }
