@@ -152,6 +152,7 @@ function setupFilters() {
   document.getElementById('filterMethod').addEventListener('change', renderTransactionsTable);
   document.getElementById('filterStatus').addEventListener('change', renderTransactionsTable);
   document.getElementById('filterPickup').addEventListener('change', renderTransactionsTable);
+  document.getElementById('filterSort')?.addEventListener('change', renderTransactionsTable);
 }
 
 function renderTransactionsTable() {
@@ -162,6 +163,7 @@ function renderTransactionsTable() {
   const filterMethod = document.getElementById('filterMethod').value;
   const filterStatus = document.getElementById('filterStatus').value;
   const filterPickup = document.getElementById('filterPickup').value;
+  const filterSort = document.getElementById('filterSort')?.value || 'newest';
 
   tbody.innerHTML = '';
 
@@ -170,7 +172,7 @@ function renderTransactionsTable() {
     return;
   }
 
-  const filtered = orders.filter(o => {
+  let filtered = orders.filter(o => {
     const matchName = searchName === '' || o.name.toLowerCase().includes(searchName) || o.id.toLowerCase().includes(searchName);
     const matchDay = (filterDay === 'all' || o.day === filterDay);
     const matchMethod = (filterMethod === 'all' || o.payMethod === filterMethod);
@@ -178,6 +180,15 @@ function renderTransactionsTable() {
     const matchPickup = (filterPickup === 'all' || o.pickupStatus === filterPickup);
     return matchName && matchDay && matchMethod && matchStatus && matchPickup;
   });
+
+  // Sorting Logic
+  if (filterSort === 'oldest') {
+    filtered = [...filtered].reverse();
+  } else if (filterSort === 'highest') {
+    filtered.sort((a, b) => b.total - a.total);
+  } else if (filterSort === 'lowest') {
+    filtered.sort((a, b) => a.total - b.total);
+  }
 
   if (filtered.length === 0) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">Belum ada data transaksi yang sesuai dengan filter pencarian.</td></tr>`;

@@ -394,3 +394,32 @@ function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) modal.classList.remove('active');
 }
+
+// Floating Toast Notification Engine
+function showToast(message, iconClass = 'fa-circle-check') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.innerHTML = `<i class="fa-solid ${iconClass}" style="color: var(--accent-gold); font-size: 1.1rem;"></i> <span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    if (toast && toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 4000);
+}
+
+// Interactive FAQ Accordion Toggle
+function toggleFaq(headerElem) {
+  const faqItem = headerElem.parentElement;
+  const isActive = faqItem.classList.contains('active');
+  
+  document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+  
+  if (!isActive) {
+    faqItem.classList.add('active');
+  }
+}

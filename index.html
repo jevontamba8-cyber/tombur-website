@@ -18,6 +18,9 @@
 </head>
 <body>
 
+  <!-- Toast Notification Overlay Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
   <!-- Navbar -->
   <nav class="navbar">
     <a href="#" class="brand">
@@ -31,6 +34,7 @@
       <li><a href="#beranda" class="nav-link active">Beranda</a></li>
       <li><a href="#katalog" class="nav-link">Katalog Produk</a></li>
       <li><a href="#info" class="nav-link">Info Event</a></li>
+      <li><a href="#faq" class="nav-link">FAQ</a></li>
       <li><a href="#sponsors" class="nav-link">Sponsor</a></li>
       <li><a href="#pesan" class="nav-link">Pesan Tiket</a></li>
       <li><a href="#cek-tiket" class="nav-link">Cek Pemesanan</a></li>
@@ -176,6 +180,56 @@
           <label>Pengambilan Tiket Physical</label>
           <p>Di Meja Panitia Acara</p>
           <span style="font-size: 0.85rem; color: var(--text-muted);">Sebutkan Nama Pemesan / TRX ID</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion Section -->
+  <section class="container" id="faq" style="padding-bottom: 4rem;">
+    <div class="section-title-wrap" style="text-align: center; margin-bottom: 2rem;">
+      <h2 class="section-title" style="color: var(--accent-gold); font-size: 1.8rem; font-weight: 900;"><i class="fa-solid fa-circle-question" style="color: var(--accent-gold);"></i> Pertanyaan Sering Ditanyakan (FAQ)</h2>
+      <p class="section-desc" style="color: var(--text-muted);">Temukan jawaban cepat seputar pemesanan tiket & penukaran gelang fisik.</p>
+    </div>
+
+    <div class="faq-accordion">
+      <div class="faq-item">
+        <div class="faq-header" onclick="toggleFaq(this)">
+          <span><i class="fa-solid fa-location-dot" style="color: var(--accent-gold); margin-right: 8px;"></i> 1. Di mana lokasi penukaran / pengambilan tiket fisik (wristband)?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-body">
+          Tiket fisik berupa gelang resmi (wristband) diambil langsung di <strong>Meja Panitia / Desk Registrasi</strong> di venue Wira Yudha Sport Center saat hari pelaksanaan acara.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-header" onclick="toggleFaq(this)">
+          <span><i class="fa-solid fa-id-card" style="color: var(--accent-gold); margin-right: 8px;"></i> 2. Apa yang perlu ditunjukkan pembeli saat mengambil tiket?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-body">
+          Pembeli tidak memerlukan e-ticket atau QR Code khusus. Cukup sebutkan <strong>Nama Pemesan</strong> atau tunjukkan <strong>Nomor Transaksi (TRX ID)</strong> kepada panitia di meja registrasi.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-header" onclick="toggleFaq(this)">
+          <span><i class="fa-solid fa-qrcode" style="color: var(--accent-gold); margin-right: 8px;"></i> 3. Bagaimana jika pembayaran via QRIS belum verifikasi di website?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-body">
+          Bukti transfer yang Anda unggah sudah tersimpan aman di database sistem panitia. Panitia di meja registrasi akan memverifikasi dan mencocokkan transaksi Anda secara langsung di tempat.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-header" onclick="toggleFaq(this)">
+          <span><i class="fa-solid fa-money-bill-wave" style="color: var(--accent-gold); margin-right: 8px;"></i> 4. Apakah bisa memilih pembayaran CASH (Tunai)?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </div>
+        <div class="faq-body">
+          Tentu saja! Anda cukup memilih metode <strong>CASH (Tunai)</strong> saat mengisi form pemesanan online, lalu melakukan pembayaran tunai secara langsung kepada panitia di meja pemesanan tiket.
         </div>
       </div>
     </div>
