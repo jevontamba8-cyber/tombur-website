@@ -22,30 +22,17 @@ const PRODUCT_CATALOG = {
     price: 10000,
     image: 'gambar/66a8c20a-c6ef-4de7-b4f9-33a68f1a26df.jpg',
     desc: 'Gelang fisik resmi tiket masuk venue event Wira Yudha Sport Center.'
-  },
-  'bundling': {
-    name: 'Paket Bundling (Tiket + Kipas)',
-    price: 15000,
-    image: 'gambar/ad308ac7-acaa-4d1e-a23d-d71b30dc583d.jpg',
-    desc: 'Isi paket: 1 Tiket Masuk Wristband + 1 Kipas Official TOMBUR Vol 2.'
-  },
-  'kipas': {
-    name: 'Official Kipas TOMBUR Vol 2',
-    price: 10000,
-    image: 'gambar/ad308ac7-acaa-4d1e-a23d-d71b30dc583d.jpg',
-    desc: 'Merchandise Kipas Eksklusif Parheheon SHINE.'
   }
 };
 
 const DAY_NAMES = {
   'day1': 'Sabtu, 12 September 2026 (Day One)',
-  'day2': 'Minggu, 13 September 2026 (Day Two)',
-  'both': 'Sabtu & Minggu (Terusan 2 Hari)'
+  'day2': 'Minggu, 13 September 2026 (Day Two)'
 };
 
 let lastCreatedOrder = null;
 
-// Initial Stock setup (Day 1: 200 tickets, Day 2: 100 tickets, Kipas: 200)
+// Initial Stock setup (Day 1: 200 tickets, Day 2: 100 tickets)
 function initStorage() {
   if (!localStorage.getItem('parheheon_orders')) {
     localStorage.setItem('parheheon_orders', JSON.stringify([]));
@@ -53,8 +40,7 @@ function initStorage() {
   if (!localStorage.getItem('parheheon_stock')) {
     const initialStock = {
       'tiket_day1': 200,
-      'tiket_day2': 100,
-      'kipas': 200
+      'tiket_day2': 100
     };
     localStorage.setItem('parheheon_stock', JSON.stringify(initialStock));
   }
@@ -94,31 +80,14 @@ function renderProductCards() {
   const stock = getStock();
   const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
 
-  let stockTiketVal = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (dayKey === 'day2' ? (stock['tiket_day2'] ?? 100) : Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100));
+  let stockTiketVal = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
   container.innerHTML = `
-    <div class="pricing-card-option selected" data-type="tiket" data-price="10000">
+    <div class="pricing-card-option selected" data-type="tiket" data-price="10000" style="max-width: 320px; margin: 0 auto;">
       <img src="${PRODUCT_CATALOG['tiket'].image}" alt="Tiket Wristband" class="product-card-img">
-      <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['tiket'].name}</div>
-      <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 10.000</div>
+      <div class="price-title" style="font-size:0.95rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['tiket'].name}</div>
+      <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.25rem; margin:4px 0;">Rp 10.000</div>
       <span class="stock-badge" id="stockBadgeTiket">Kuota Tiket: ${stockTiketVal}</span>
-    </div>
-
-    <div class="pricing-card-option" data-type="bundling" data-price="15000">
-      <div style="display:flex; gap:2px; height:90px; border-radius:8px; overflow:hidden; border:1px solid rgba(255,215,0,0.3); margin-bottom:8px;">
-        <img src="gambar/66a8c20a-c6ef-4de7-b4f9-33a68f1a26df.jpg" alt="Tiket" style="width:50%; height:100%; object-fit:cover;">
-        <img src="gambar/ad308ac7-acaa-4d1e-a23d-d71b30dc583d.jpg" alt="Kipas" style="width:50%; height:100%; object-fit:cover;">
-      </div>
-      <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['bundling'].name}</div>
-      <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 15.000</div>
-      <span class="stock-badge" style="background: rgba(255,215,0,0.15); color: var(--accent-gold);">Paket Hemat (Tiket + Kipas)</span>
-    </div>
-
-    <div class="pricing-card-option" data-type="kipas" data-price="10000">
-      <img src="${PRODUCT_CATALOG['kipas'].image}" alt="Kipas Official" class="product-card-img">
-      <div class="price-title" style="font-size:0.85rem; font-weight:800; color:#fff;">${PRODUCT_CATALOG['kipas'].name}</div>
-      <div class="price-val" style="color:var(--accent-gold); font-weight:900; font-size:1.1rem; margin:4px 0;">Rp 10.000</div>
-      <span class="stock-badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">Merchandise Official</span>
     </div>
   `;
 
@@ -192,7 +161,7 @@ function calculateTotalSummary() {
   const totalPriceText = document.getElementById('totalPriceText');
 
   if (summaryDayText) summaryDayText.textContent = DAY_NAMES[dayKey] || dayKey;
-  if (summaryCategoryText) summaryCategoryText.textContent = `${PRODUCT_CATALOG[categoryKey]?.name || categoryKey} (Rp ${unitPrice.toLocaleString('id-ID')})`;
+  if (summaryCategoryText) summaryCategoryText.textContent = `${PRODUCT_CATALOG[categoryKey]?.name || 'Tiket Masuk Wristband'} (Rp ${unitPrice.toLocaleString('id-ID')})`;
   if (summaryQty) summaryQty.textContent = `${qty} Item`;
   
   const grandTotal = unitPrice * qty;
@@ -231,14 +200,8 @@ function setupFormListeners() {
       let q = parseInt(ticketQty.value) || 1;
       const stock = getStock();
       const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
-      const category = document.getElementById('selectedCategory')?.value || 'tiket';
 
-      let maxAvailable = 99;
-      if (category === 'tiket' || category === 'bundling') {
-        if (dayKey === 'day1') maxAvailable = stock['tiket_day1'] ?? 200;
-        else if (dayKey === 'day2') maxAvailable = stock['tiket_day2'] ?? 100;
-        else maxAvailable = Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100);
-      }
+      let maxAvailable = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
       if (q < maxAvailable) {
         ticketQty.value = q + 1;
@@ -255,7 +218,7 @@ function setupFormListeners() {
     const name = document.getElementById('custName')?.value.trim();
     const church = document.getElementById('churchSelect')?.value;
     const day = document.getElementById('eventDaySelect')?.value || 'day1';
-    const category = document.getElementById('selectedCategory')?.value || 'tiket';
+    const category = 'tiket';
     const unitPrice = parseInt(document.getElementById('selectedUnitPrice')?.value) || 10000;
     const qty = parseInt(document.getElementById('ticketQty')?.value) || 1;
     const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'qris';
@@ -274,38 +237,20 @@ function setupFormListeners() {
 
     // Check stock availability
     const stock = getStock();
-    if (category === 'tiket' || category === 'bundling') {
-      if (day === 'day1' && ((stock['tiket_day1'] ?? 200) < qty)) {
-        alert(`Kuota Tiket Day One tersisa ${stock['tiket_day1']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
-        return;
-      }
-      if (day === 'day2' && ((stock['tiket_day2'] ?? 100) < qty)) {
-        alert(`Kuota Tiket Day Two tersisa ${stock['tiket_day2']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
-        return;
-      }
-      if (day === 'both') {
-        if ((stock['tiket_day1'] ?? 200) < qty || (stock['tiket_day2'] ?? 100) < qty) {
-          alert(`Kuota Tiket Terusan tidak mencukupi.`);
-          return;
-        }
-      }
+    if (day === 'day1' && ((stock['tiket_day1'] ?? 200) < qty)) {
+      alert(`Kuota Tiket Day One tersisa ${stock['tiket_day1']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
+      return;
+    }
+    if (day === 'day2' && ((stock['tiket_day2'] ?? 100) < qty)) {
+      alert(`Kuota Tiket Day Two tersisa ${stock['tiket_day2']} tiket. Pemesanan Anda (${qty}) melebihi kuota!`);
+      return;
     }
 
     // Deduct stock
-    if (category === 'tiket' || category === 'bundling') {
-      if (day === 'day1') {
-        stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
-      } else if (day === 'day2') {
-        stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
-      } else if (day === 'both') {
-        stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
-        stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
-      }
-      if (category === 'bundling') {
-        stock['kipas'] = Math.max(0, (stock['kipas'] ?? 200) - qty);
-      }
-    } else if (category === 'kipas') {
-      stock['kipas'] = Math.max(0, (stock['kipas'] ?? 200) - qty);
+    if (day === 'day1') {
+      stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
+    } else if (day === 'day2') {
+      stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
     }
 
     saveStock(stock);
@@ -319,7 +264,7 @@ function setupFormListeners() {
       church: church,
       day: day,
       category: category,
-      productName: PRODUCT_CATALOG[category]?.name || category,
+      productName: PRODUCT_CATALOG[category]?.name || 'Tiket Masuk Wristband',
       unitPrice: unitPrice,
       qty: qty,
       total: unitPrice * qty,
@@ -352,7 +297,7 @@ function updateLiveStockDisplay() {
   const stock = getStock();
   const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
 
-  let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (dayKey === 'day2' ? (stock['tiket_day2'] ?? 100) : Math.min(stock['tiket_day1'] ?? 200, stock['tiket_day2'] ?? 100));
+  let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
   const badgeT = document.getElementById('stockBadgeTiket');
   if (badgeT) badgeT.textContent = `Kuota Tiket: ${sTiket}`;

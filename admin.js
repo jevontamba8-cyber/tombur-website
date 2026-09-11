@@ -1,15 +1,12 @@
 // Admin JS - Parheheon HKBP Cibubur (SHINE TOMBUR Vol 2) Strict System
 
 const CATEGORY_NAMES = {
-  'tiket': 'Tiket Masuk Wristband',
-  'bundling': 'Paket Bundling (Tiket + Kipas)',
-  'kipas': 'Official Kipas TOMBUR Vol 2'
+  'tiket': 'Tiket Masuk Wristband'
 };
 
 const DAY_NAMES = {
   'day1': 'Sabtu, 12 Sep 2026 (Day One)',
-  'day2': 'Minggu, 13 Sep 2026 (Day Two)',
-  'both': 'Sabtu & Minggu (Terusan 2 Hari)'
+  'day2': 'Minggu, 13 Sep 2026 (Day Two)'
 };
 
 let currentVerifyingOrderId = null;
@@ -52,8 +49,7 @@ function initStorage() {
   if (!localStorage.getItem('parheheon_stock')) {
     const initialStock = {
       'tiket_day1': 200,
-      'tiket_day2': 100,
-      'kipas': 200
+      'tiket_day2': 100
     };
     localStorage.setItem('parheheon_stock', JSON.stringify(initialStock));
   }
@@ -146,8 +142,7 @@ function setupAuth() {
       localStorage.setItem('parheheon_orders', JSON.stringify([]));
       const resetStock = {
         'tiket_day1': 200,
-        'tiket_day2': 100,
-        'kipas': 200
+        'tiket_day2': 100
       };
       saveStock(resetStock);
       previousOrderCount = 0;
@@ -275,8 +270,8 @@ function loadDashboardData() {
     if (o.status === 'lunas') {
       totalIncome += o.total;
       totalProductsSold += o.qty;
-      if (o.category === 'tiket' || o.category === 'bundling') {
-        totalTicketsSold += (o.day === 'both' ? o.qty * 2 : o.qty);
+      if (o.category === 'tiket') {
+        totalTicketsSold += o.qty;
       }
 
       if (o.payMethod === 'qris') qrisIncome += o.total;
@@ -433,9 +428,7 @@ function renderProductStockReport() {
   }
 
   const items = [
-    { key: 'tiket', name: 'Tiket Masuk Wristband (Rp 10.000)' },
-    { key: 'bundling', name: 'Paket Bundling Tiket + Kipas (Rp 15.000)' },
-    { key: 'kipas', name: 'Official Kipas TOMBUR Vol 2 (Rp 10.000)' }
+    { key: 'tiket', name: 'Tiket Masuk Wristband (Rp 10.000)' }
   ];
 
   items.forEach(item => {
@@ -449,19 +442,12 @@ function renderProductStockReport() {
         totalQty += o.qty;
         revenue += o.total;
 
-        if (o.day === 'day1' || o.day === 'both') day1Qty += o.qty;
-        if (o.day === 'day2' || o.day === 'both') day2Qty += o.qty;
+        if (o.day === 'day1') day1Qty += o.qty;
+        if (o.day === 'day2') day2Qty += o.qty;
       }
     });
 
-    let sisaStockText = '';
-    if (item.key === 'tiket') {
-      sisaStockText = `Day 1: ${stock['tiket_day1'] ?? 200} | Day 2: ${stock['tiket_day2'] ?? 100}`;
-    } else if (item.key === 'bundling') {
-      sisaStockText = `Day 1: ${stock['tiket_day1'] ?? 200} | Day 2: ${stock['tiket_day2'] ?? 100}`;
-    } else {
-      sisaStockText = `Kipas: ${stock['kipas'] ?? 200}`;
-    }
+    let sisaStockText = `Day 1: ${stock['tiket_day1'] ?? 200} | Day 2: ${stock['tiket_day2'] ?? 100}`;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -490,8 +476,7 @@ function renderDailyReports() {
 
   const reportData = {
     'day1': { title: 'Day One — Sabtu, 12 September 2026', tickets: 0, orders: 0, qris: 0, cash: 0, totalIncome: 0, pendingCount: 0 },
-    'day2': { title: 'Day Two — Minggu, 13 September 2026', tickets: 0, orders: 0, qris: 0, cash: 0, totalIncome: 0, pendingCount: 0 },
-    'both': { title: 'Terusan 2 Hari (Sabtu & Minggu)', tickets: 0, orders: 0, qris: 0, cash: 0, totalIncome: 0, pendingCount: 0 }
+    'day2': { title: 'Day Two — Minggu, 13 September 2026', tickets: 0, orders: 0, qris: 0, cash: 0, totalIncome: 0, pendingCount: 0 }
   };
 
   let combinedTickets = 0;
@@ -507,7 +492,7 @@ function renderDailyReports() {
     if (reportData[dayKey]) {
       reportData[dayKey].orders++;
       if (o.status === 'lunas') {
-        reportData[dayKey].tickets += (o.day === 'both' ? o.qty * 2 : o.qty);
+        reportData[dayKey].tickets += o.qty;
         reportData[dayKey].totalIncome += o.total;
 
         if (o.payMethod === 'qris') reportData[dayKey].qris += o.total;
@@ -519,7 +504,7 @@ function renderDailyReports() {
 
     combinedOrders++;
     if (o.status === 'lunas') {
-      combinedTickets += (o.day === 'both' ? o.qty * 2 : o.qty);
+      combinedTickets += o.qty;
       combinedIncome += o.total;
       if (o.payMethod === 'qris') combinedQris += o.total;
       if (o.payMethod === 'cash') combinedCash += o.total;
@@ -528,8 +513,8 @@ function renderDailyReports() {
     }
   });
 
-  // Render Day One, Day Two, Both
-  ['day1', 'day2', 'both'].forEach(key => {
+  // Render Day One, Day Two
+  ['day1', 'day2'].forEach(key => {
     const r = reportData[key];
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -716,8 +701,8 @@ function printOfficialPdfReport() {
   orders.forEach(o => {
     if (o.status === 'lunas') {
       totalIncome += o.total;
-      if (o.category === 'tiket' || o.category === 'bundling') {
-        totalTickets += (o.day === 'both' ? o.qty * 2 : o.qty);
+      if (o.category === 'tiket') {
+        totalTickets += o.qty;
       }
       if (o.payMethod === 'qris') qrisIncome += o.total;
       if (o.payMethod === 'cash') cashIncome += o.total;
