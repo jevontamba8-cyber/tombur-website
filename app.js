@@ -5,7 +5,10 @@ const CHURCH_LIST = [
   "HKBP Cibubur",
   "HKBP Cibinong",
   "HKBP Jatiwaringin",
-  "GKP YERUEL"
+  "GKP YERUEL",
+  "GPIB AGAVE",
+  "HKBP JATI SAMPURNA",
+  "HKBP HARJAMUKTI"
 ];
 
 const PRODUCT_CATALOG = {
