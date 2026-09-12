@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initStorage();
   setupAuth();
   setupFilters();
+  initRealtimeOrderMonitor();
+  checkNewOrders();
 });
 
 function setupAuth() {
@@ -138,7 +140,7 @@ function setupAuth() {
     loginModal.classList.remove('active');
     adminContent.style.display = 'block';
     btnLogout.style.display = 'inline-flex';
-    loadDashboardData();
+    checkNewOrders().then(() => loadDashboardData());
   }
 
   loginForm.addEventListener('submit', (e) => {
@@ -168,7 +170,7 @@ function setupAuth() {
       loginModal.classList.remove('active');
       adminContent.style.display = 'block';
       btnLogout.style.display = 'inline-flex';
-      loadDashboardData();
+      checkNewOrders().then(() => loadDashboardData());
     } else {
       if (errorAlert && errorMsg) {
         errorMsg.textContent = 'Username atau Password yang Anda masukkan salah!';
@@ -191,14 +193,16 @@ function setupAuth() {
 
   // 1. Sync Data Button Handler
   document.getElementById('btnRefreshData')?.addEventListener('click', () => {
-    loadDashboardData();
-    showAdminToast('Data transaksi & sisa kuota berhasil disinkronkan!', 'fa-rotate');
+    checkNewOrders().then(() => {
+      loadDashboardData();
+      showAdminToast('Data transaksi & sisa kuota berhasil disinkronkan dari Firebase!', 'fa-rotate');
+    });
   });
 
   // 2. Reset Database Button Handler
   document.getElementById('btnResetDatabase')?.addEventListener('click', () => {
     if (confirm('Apakah Anda yakin ingin mengosongkan seluruh database transaksi? (Sistem akan kembali bersih dengan data 0).')) {
-      localStorage.setItem('parheheon_orders', JSON.stringify([]));
+      saveOrders([]);
       const resetStock = {
         'tiket_day1': 200,
         'tiket_day2': 100
@@ -209,9 +213,6 @@ function setupAuth() {
       showAdminToast('Database transaksi berhasil dikosongkan! Kuota di-reset.', 'fa-trash-can');
     }
   });
-
-  // Start real-time new order notification monitoring
-  initRealtimeOrderMonitor();
 }
 
 // Real-Time Audio Chime Notification Synthesizer (Web Audio API)
