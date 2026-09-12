@@ -71,8 +71,8 @@ function initStorage() {
   }
 }
 
-const CLOUD_SYNC_URL_ORDERS = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_orders';
-const CLOUD_SYNC_URL_STOCK  = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_stock';
+const CLOUD_SYNC_URL_ORDERS = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
+const CLOUD_SYNC_URL_STOCK  = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/stock.json';
 
 function getOrders() {
   return JSON.parse(localStorage.getItem('parheheon_orders') || '[]');
@@ -95,22 +95,24 @@ function saveStock(stock) {
 async function saveOrdersCloud(orders) {
   try {
     await fetch(CLOUD_SYNC_URL_ORDERS, {
-      method: 'POST',
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orders)
     });
   } catch (e) {
-    console.log('Cloud save error:', e);
+    console.log('Firebase orders save error:', e);
   }
 }
 
 async function saveStockCloud(stock) {
   try {
     await fetch(CLOUD_SYNC_URL_STOCK, {
-      method: 'POST',
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(stock)
     });
   } catch (e) {
-    console.log('Cloud stock save error:', e);
+    console.log('Firebase stock save error:', e);
   }
 }
 
