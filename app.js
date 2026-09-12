@@ -75,6 +75,23 @@ const API_MYSQL_URL = 'api.php';
 const CLOUD_SYNC_URL_ORDERS = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
 const CLOUD_SYNC_URL_STOCK  = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/stock.json';
 
+function normalizeCloudOrders(raw) {
+  if (!raw) return [];
+  let list = [];
+  if (Array.isArray(raw)) {
+    list = raw.filter(o => o && typeof o === 'object' && o.id);
+  } else if (typeof raw === 'object') {
+    list = Object.values(raw).filter(o => o && typeof o === 'object' && o.id);
+  }
+  const map = new Map();
+  list.forEach(o => {
+    if (o && o.id) map.set(o.id, o);
+  });
+  const uniqueList = Array.from(map.values());
+  uniqueList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  return uniqueList;
+}
+
 function getOrders() {
   return JSON.parse(localStorage.getItem('parheheon_orders') || '[]');
 }
@@ -99,7 +116,7 @@ async function saveOrdersCloud(ordersToSave) {
     // 1. Try MySQL API first if active
     try {
       const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const json = await res.json();
         if (json.success) return; // MySQL active and handles DB
       }
@@ -111,7 +128,7 @@ async function saveOrdersCloud(ordersToSave) {
       const res = await fetch(CLOUD_SYNC_URL_ORDERS);
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data)) currentCloudOrders = data;
+        currentCloudOrders = normalizeCloudOrders(data);
       }
     } catch (e) {}
 
@@ -129,11 +146,10 @@ async function saveOrdersCloud(ordersToSave) {
     });
 
     if (!putRes.ok) {
-      showToast('Gagal sinkronisasi data ke Cloud Database!', 'fa-triangle-exclamation');
+      if (typeof showToast === 'function') showToast('Gagal sinkronisasi data ke Cloud Database!', 'fa-triangle-exclamation');
     }
   } catch (e) {
     console.log('Firebase orders save error:', e);
-    showToast('Koneksi Cloud terganggu.', 'fa-wifi');
   }
 }
 
@@ -167,12 +183,13 @@ async function syncCloudToLocal() {
   // 1. Try MySQL api.php first
   try {
     const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
-        localStorage.setItem('parheheon_orders', JSON.stringify(json.data));
+        const normalized = normalizeCloudOrders(json.data);
+        localStorage.setItem('parheheon_orders', JSON.stringify(normalized));
         const resStock = await fetch(`${API_MYSQL_URL}?action=get_stock`);
-        if (resStock.ok) {
+        if (resStock.ok && resStock.headers.get('content-type')?.includes('application/json')) {
           const jsonStock = await resStock.json();
           if (jsonStock.success) localStorage.setItem('parheheon_stock', JSON.stringify(jsonStock.data));
         }
@@ -185,12 +202,13 @@ async function syncCloudToLocal() {
   try {
     const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
     if (resOrders.ok) {
-      const cloudOrders = await resOrders.json();
-      if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+      const rawOrders = await resOrders.json();
+      const cloudOrders = normalizeCloudOrders(rawOrders);
+      if (cloudOrders.length > 0) {
         localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
       }
     } else {
-      showToast('Gagal terhubung ke Cloud Database.', 'fa-triangle-exclamation');
+      if (typeof showToast === 'function') showToast('Gagal terhubung ke Cloud Database.', 'fa-triangle-exclamation');
     }
 
     const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
@@ -202,7 +220,6 @@ async function syncCloudToLocal() {
     }
   } catch (err) {
     console.log('Initial cloud sync status:', err);
-    showToast('Mode Offline / Koneksi Cloud terbatas.', 'fa-wifi');
   }
 }
 

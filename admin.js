@@ -33,13 +33,30 @@ function saveStock(stock) {
   saveStockCloud(stock);
 }
 
+function normalizeCloudOrders(raw) {
+  if (!raw) return [];
+  let list = [];
+  if (Array.isArray(raw)) {
+    list = raw.filter(o => o && typeof o === 'object' && o.id);
+  } else if (typeof raw === 'object') {
+    list = Object.values(raw).filter(o => o && typeof o === 'object' && o.id);
+  }
+  const map = new Map();
+  list.forEach(o => {
+    if (o && o.id) map.set(o.id, o);
+  });
+  const uniqueList = Array.from(map.values());
+  uniqueList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  return uniqueList;
+}
+
 // Fetch-Merge-PUT Strategy for Firebase to Prevent Race Conditions & Overwrites
 async function saveOrdersCloud(ordersToSave) {
   try {
     // 1. Try MySQL API first if active
     try {
       const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const json = await res.json();
         if (json.success) return; // MySQL active
       }
@@ -51,7 +68,7 @@ async function saveOrdersCloud(ordersToSave) {
       const res = await fetch(CLOUD_SYNC_URL_ORDERS);
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data)) currentCloudOrders = data;
+        currentCloudOrders = normalizeCloudOrders(data);
       }
     } catch (e) {}
 
@@ -73,7 +90,6 @@ async function saveOrdersCloud(ordersToSave) {
     }
   } catch (e) {
     console.log('Firebase orders save error:', e);
-    showAdminToast('⚠️ Koneksi Cloud terganggu.', 'fa-wifi');
   }
 }
 
@@ -341,7 +357,7 @@ async function checkNewOrders() {
   // 1. Try MySQL api.php server backend first
   try {
     const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         fetchedOrders = json.data;
@@ -349,7 +365,7 @@ async function checkNewOrders() {
         
         try {
           const resStk = await fetch(`${API_MYSQL_URL}?action=get_stock`);
-          if (resStk.ok) {
+          if (resStk.ok && resStk.headers.get('content-type')?.includes('application/json')) {
             const jsonStk = await resStk.json();
             if (jsonStk.success) fetchedStock = jsonStk.data;
           }
@@ -363,7 +379,8 @@ async function checkNewOrders() {
     try {
       const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
       if (resOrders.ok) {
-        fetchedOrders = await resOrders.json();
+        const rawOrders = await resOrders.json();
+        fetchedOrders = normalizeCloudOrders(rawOrders);
         try {
           const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
           if (resStock.ok) fetchedStock = await resStock.json();
@@ -374,6 +391,8 @@ async function checkNewOrders() {
     } catch (err) {
       showAdminToast('⚠️ Koneksi internet / Cloud terputus!', 'fa-wifi');
     }
+  } else {
+    fetchedOrders = normalizeCloudOrders(fetchedOrders);
   }
 
   if (Array.isArray(fetchedOrders)) {
