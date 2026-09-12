@@ -11,12 +11,16 @@ const DAY_NAMES = {
 
 let currentVerifyingOrderId = null;
 
+const CLOUD_SYNC_URL_ORDERS = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_orders';
+const CLOUD_SYNC_URL_STOCK  = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_stock';
+
 function getOrders() {
   return JSON.parse(localStorage.getItem('parheheon_orders') || '[]');
 }
 
 function saveOrders(orders) {
   localStorage.setItem('parheheon_orders', JSON.stringify(orders));
+  saveOrdersCloud(orders);
 }
 
 function getStock() {
@@ -25,6 +29,29 @@ function getStock() {
 
 function saveStock(stock) {
   localStorage.setItem('parheheon_stock', JSON.stringify(stock));
+  saveStockCloud(stock);
+}
+
+async function saveOrdersCloud(orders) {
+  try {
+    await fetch(CLOUD_SYNC_URL_ORDERS, {
+      method: 'POST',
+      body: JSON.stringify(orders)
+    });
+  } catch (e) {
+    console.log('Cloud save error:', e);
+  }
+}
+
+async function saveStockCloud(stock) {
+  try {
+    await fetch(CLOUD_SYNC_URL_STOCK, {
+      method: 'POST',
+      body: JSON.stringify(stock)
+    });
+  } catch (e) {
+    console.log('Cloud stock save error:', e);
+  }
 }
 
 let currentCaptcha = '';
@@ -255,28 +282,64 @@ function initRealtimeOrderMonitor() {
   }, 3000);
 }
 
-function checkNewOrders() {
-  const currentOrders = getOrders();
-  if (previousOrderCount === null) {
-    previousOrderCount = currentOrders.length;
-    return;
-  }
+async function checkNewOrders() {
+  try {
+    const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
+    if (resOrders.ok) {
+      const cloudOrders = await resOrders.json();
+      if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+        const localOrders = getOrders();
+        
+        if (previousOrderCount === null) {
+          previousOrderCount = cloudOrders.length;
+          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
+          loadDashboardData();
+          return;
+        }
 
-  if (currentOrders.length > previousOrderCount) {
-    const newestOrder = currentOrders[0];
-    previousOrderCount = currentOrders.length;
-    
-    // Refresh dashboard UI math & tables
-    loadDashboardData();
-    
-    // Play sound & pop notification toast
-    playNotificationChime();
-    if (newestOrder) {
-      showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name} (${newestOrder.productName} - Rp ${newestOrder.total.toLocaleString('id-ID')})`, 'fa-bell');
+        if (cloudOrders.length > previousOrderCount) {
+          const newestOrder = cloudOrders[0];
+          previousOrderCount = cloudOrders.length;
+          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
+          
+          // Also sync cloud stock
+          try {
+            const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
+            if (resStock.ok) {
+              const cloudStock = await resStock.json();
+              if (cloudStock && typeof cloudStock === 'object') {
+                localStorage.setItem('parheheon_stock', JSON.stringify(cloudStock));
+              }
+            }
+          } catch(e) {}
+
+          loadDashboardData();
+          playNotificationChime();
+          if (newestOrder) {
+            showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name} (${newestOrder.productName} - Rp ${newestOrder.total.toLocaleString('id-ID')})`, 'fa-bell');
+          }
+        } else if (JSON.stringify(cloudOrders) !== JSON.stringify(localOrders)) {
+          previousOrderCount = cloudOrders.length;
+          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
+          loadDashboardData();
+        }
+      }
     }
-  } else if (currentOrders.length !== previousOrderCount) {
-    previousOrderCount = currentOrders.length;
-    loadDashboardData();
+  } catch (err) {
+    const currentOrders = getOrders();
+    if (previousOrderCount === null) {
+      previousOrderCount = currentOrders.length;
+      return;
+    }
+    if (currentOrders.length > previousOrderCount) {
+      const newestOrder = currentOrders[0];
+      previousOrderCount = currentOrders.length;
+      loadDashboardData();
+      playNotificationChime();
+      if (newestOrder) {
+        showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name}`, 'fa-bell');
+      }
+    }
   }
 }
 

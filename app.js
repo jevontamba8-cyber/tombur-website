@@ -71,12 +71,16 @@ function initStorage() {
   }
 }
 
+const CLOUD_SYNC_URL_ORDERS = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_orders';
+const CLOUD_SYNC_URL_STOCK  = 'https://kvdb.io/2UvW4L56G9K1mX7P3zQ8yN/parheheon_stock';
+
 function getOrders() {
   return JSON.parse(localStorage.getItem('parheheon_orders') || '[]');
 }
 
 function saveOrders(orders) {
   localStorage.setItem('parheheon_orders', JSON.stringify(orders));
+  saveOrdersCloud(orders);
 }
 
 function getStock() {
@@ -85,10 +89,66 @@ function getStock() {
 
 function saveStock(stock) {
   localStorage.setItem('parheheon_stock', JSON.stringify(stock));
+  saveStockCloud(stock);
+}
+
+async function saveOrdersCloud(orders) {
+  try {
+    await fetch(CLOUD_SYNC_URL_ORDERS, {
+      method: 'POST',
+      body: JSON.stringify(orders)
+    });
+  } catch (e) {
+    console.log('Cloud save error:', e);
+  }
+}
+
+async function saveStockCloud(stock) {
+  try {
+    await fetch(CLOUD_SYNC_URL_STOCK, {
+      method: 'POST',
+      body: JSON.stringify(stock)
+    });
+  } catch (e) {
+    console.log('Cloud stock save error:', e);
+  }
+}
+
+async function syncCloudToLocal() {
+  try {
+    const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
+    if (resOrders.ok) {
+      const cloudOrders = await resOrders.json();
+      if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+        localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
+      } else {
+        const localOrders = getOrders();
+        await saveOrdersCloud(localOrders);
+      }
+    }
+
+    const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
+    if (resStock.ok) {
+      const cloudStock = await resStock.json();
+      if (cloudStock && typeof cloudStock === 'object' && (cloudStock['tiket_day1'] !== undefined || cloudStock['tiket_day2'] !== undefined)) {
+        localStorage.setItem('parheheon_stock', JSON.stringify(cloudStock));
+      } else {
+        const localStock = getStock();
+        await saveStockCloud(localStock);
+      }
+    }
+  } catch (err) {
+    console.log('Initial cloud sync status:', err);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initStorage();
+  syncCloudToLocal().then(() => {
+    renderProductCards();
+    updateLiveStockDisplay();
+    calculateTotalSummary();
+  });
   renderProductCards();
   setupPricingCategorySelector();
   setupPaymentMethodSelector();
