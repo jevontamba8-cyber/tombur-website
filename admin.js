@@ -360,8 +360,16 @@ function loadDashboardData() {
   let pickedUpCount = 0;
   let notPickedUpCount = 0;
 
+  let day1Sold = 0;
+  let day2Sold = 0;
+
   orders.forEach(o => {
     totalOrdersValue += o.total;
+
+    if (o.status !== 'ditolak') {
+      if (o.day === 'day1') day1Sold += o.qty;
+      if (o.day === 'day2') day2Sold += o.qty;
+    }
 
     if (o.status === 'lunas') {
       totalIncome += o.total;
@@ -385,6 +393,12 @@ function loadDashboardData() {
     }
   });
 
+  const d1Remaining = Math.max(0, 200 - day1Sold);
+  const d2Remaining = Math.max(0, 100 - day2Sold);
+
+  stock['tiket_day1'] = d1Remaining;
+  stock['tiket_day2'] = d2Remaining;
+
   document.getElementById('statTotalIncome').textContent = `Rp ${totalIncome.toLocaleString('id-ID')}`;
   document.getElementById('statTotalOrdersValue').textContent = `Rp ${totalOrdersValue.toLocaleString('id-ID')}`;
   document.getElementById('statQrisIncome').textContent = `Rp ${qrisIncome.toLocaleString('id-ID')}`;
@@ -398,8 +412,8 @@ function loadDashboardData() {
   // Real-time sisa kuota tiket
   const day1QuotaElem = document.getElementById('statDay1Quota');
   const day2QuotaElem = document.getElementById('statDay2Quota');
-  if (day1QuotaElem) day1QuotaElem.textContent = `${stock['tiket_day1'] ?? 200}`;
-  if (day2QuotaElem) day2QuotaElem.textContent = `${stock['tiket_day2'] ?? 100}`;
+  if (day1QuotaElem) day1QuotaElem.textContent = `${d1Remaining}`;
+  if (day2QuotaElem) day2QuotaElem.textContent = `${d2Remaining}`;
 
   renderTransactionsTable();
   renderProductStockReport();

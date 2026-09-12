@@ -381,10 +381,22 @@ function setupFormListeners() {
 }
 
 function updateLiveStockDisplay() {
-  const stock = getStock();
-  const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
+  const orders = getOrders();
+  let day1Sold = 0;
+  let day2Sold = 0;
 
-  let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
+  orders.forEach(o => {
+    if (o.status !== 'ditolak') {
+      if (o.day === 'day1') day1Sold += o.qty;
+      if (o.day === 'day2') day2Sold += o.qty;
+    }
+  });
+
+  const d1Remaining = Math.max(0, 200 - day1Sold);
+  const d2Remaining = Math.max(0, 100 - day2Sold);
+
+  const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
+  let sTiket = dayKey === 'day1' ? d1Remaining : d2Remaining;
 
   const badgeT = document.getElementById('stockBadgeTiket');
   if (badgeT) badgeT.textContent = `Kuota Tiket: ${sTiket}`;
