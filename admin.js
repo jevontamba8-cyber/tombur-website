@@ -42,13 +42,41 @@ function generateCaptcha() {
   }
 }
 
+const INITIAL_ORDERS_SEED = [
+  { id: 'TRX-CASH-D1-001', name: 'Pembeli Cash Tomang Barat', church: 'HKBP Tomang Barat', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:00:00.000Z' },
+  { id: 'TRX-CASH-D1-002', name: 'Pembeli Cash Rawamangun', church: 'HKBP Rawamangun', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 2, total: 20000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:05:00.000Z' },
+  { id: 'TRX-CASH-D1-003', name: 'Pembeli Cash Harjamukti', church: 'HKBP Harjamukti', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 5, total: 50000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:10:00.000Z' },
+  { id: 'TRX-CASH-D1-004', name: 'Pembeli Cash Cibinong', church: 'HKBP Cibinong', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 2, total: 20000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:15:00.000Z' },
+  { id: 'TRX-CASH-D1-005', name: 'Pembeli Cash Jatisampurna', church: 'HKBP Jatisampurna', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 5, total: 50000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:20:00.000Z' },
+  { id: 'TRX-CASH-D1-006', name: 'Pembeli Cash Kernolong', church: 'HKBP Kernolong', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:25:00.000Z' },
+  { id: 'TRX-CASH-D1-007', name: 'Pembeli Cash Cibubur', church: 'HKBP Cibubur', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 4, total: 40000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:30:00.000Z' },
+  { id: 'TRX-CASH-D1-008', name: 'Pembeli Cash Jatimurni', church: 'HKBP Jatimurni', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:35:00.000Z' },
+  { id: 'TRX-CASH-D1-009', name: 'Pembeli Cash Tebet', church: 'HKBP Tebet', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:40:00.000Z' },
+  { id: 'TRX-CASH-D1-010', name: 'Pembeli Cash GPIB Agape', church: 'GPIB AGAPE', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 2, total: 20000, payMethod: 'cash', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T10:45:00.000Z' },
+  { id: 'TRX-TF-D1-001', name: 'Pembeli TF Kernolong', church: 'HKBP Kernolong', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 15, total: 150000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:00:00.000Z' },
+  { id: 'TRX-TF-D1-002', name: 'Pembeli TF Cibinong', church: 'HKBP Cibinong', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 3, total: 30000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:05:00.000Z' },
+  { id: 'TRX-TF-D1-003', name: 'Pembeli TF Jatimurni', church: 'HKBP Jatimurni', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 4, total: 40000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:10:00.000Z' },
+  { id: 'TRX-TF-D1-004', name: 'Pembeli TF Jatiwaringin', church: 'HKBP JATIWARINGIN', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 6, total: 60000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:15:00.000Z' },
+  { id: 'TRX-TF-D1-005', name: 'Pembeli TF Rawamangun', church: 'HKBP Rawamangun', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 10, total: 100000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:20:00.000Z' },
+  { id: 'TRX-TF-D1-006', name: 'Pembeli TF Pulo Mas', church: 'HKBP PULOMAS', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 16, total: 160000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:25:00.000Z' },
+  { id: 'TRX-TF-D1-007', name: 'Pembeli TF GKP Yeruel', church: 'GKP YERUEL', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 5, total: 50000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:30:00.000Z' },
+  { id: 'TRX-TF-D1-008', name: 'Pembeli TF Kebon Jeruk', church: 'HKBP Kebon Jeruk', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 6, total: 60000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:35:00.000Z' },
+  { id: 'TRX-TF-D1-009', name: 'Pembeli TF Tomang Barat', church: 'HKBP Tomang Barat', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 2, total: 20000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:40:00.000Z' },
+  { id: 'TRX-TF-D1-010', name: 'Pembeli TF Cibubur', church: 'HKBP Cibubur', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 3, total: 30000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:45:00.000Z' },
+  { id: 'TRX-TF-D1-011', name: 'Pembeli TF Jatisampurna', church: 'HKBP Jatisampurna', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 3, total: 30000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:50:00.000Z' },
+  { id: 'TRX-TF-D1-012', name: 'Pembeli TF Cipcil', church: 'Cipcil', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T11:55:00.000Z' },
+  { id: 'TRX-TF-D1-013', name: 'Pembeli TF GPIB Agape', church: 'GPIB AGAPE', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 2, total: 20000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T12:00:00.000Z' },
+  { id: 'TRX-WEB-D1-001', name: 'Pembeli Web Cibubur', church: 'HKBP Cibubur', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T12:05:00.000Z' },
+  { id: 'TRX-WEB-D1-002', name: 'Pembeli Web Anonim', church: 'Umum / Anonim', day: 'day1', category: 'tiket', productName: 'Tiket Masuk Wristband', unitPrice: 10000, qty: 1, total: 10000, payMethod: 'qris', status: 'lunas', pickupStatus: 'belum_diambil', createdAt: '2026-09-12T12:10:00.000Z' }
+];
+
 function initStorage() {
   if (!localStorage.getItem('parheheon_orders')) {
-    localStorage.setItem('parheheon_orders', JSON.stringify([]));
+    localStorage.setItem('parheheon_orders', JSON.stringify(INITIAL_ORDERS_SEED));
   }
   if (!localStorage.getItem('parheheon_stock')) {
     const initialStock = {
-      'tiket_day1': 200,
+      'tiket_day1': 98,
       'tiket_day2': 100
     };
     localStorage.setItem('parheheon_stock', JSON.stringify(initialStock));
