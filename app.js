@@ -1,19 +1,11 @@
 // App JS - Parheheon HKBP Cibubur (SHINE TOMBUR Vol 2) Strict System
 
 const CHURCH_LIST = [
-  "GKP YERUEL",
-  "HKBP JATIWARINGIN",
-  "HKBP PULOMAS",
-  "HKBP JATISAMPURNA",
-  "HKBP CIBUBUR",
-  "GPIB AGAPE",
-  "HKBP Harjamukti",
-  "HKBP Cibinong",
-  "HKBP Rawamangun",
-  "HKBP Kebon Jeruk",
   "HKBP Tomang Barat",
-  "HKBP Kernolong",
-  "HKBP Jatimurni"
+  "HKBP Cibubur",
+  "HKBP Cibinong",
+  "HKBP Jatiwaringin",
+  "GKP YERUEL"
 ];
 
 const PRODUCT_CATALOG = {
