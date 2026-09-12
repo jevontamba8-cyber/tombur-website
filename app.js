@@ -108,7 +108,7 @@ function renderProductCards() {
   if (!container) return;
 
   const stock = getStock();
-  const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+  const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
 
   let stockTiketVal = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
@@ -180,7 +180,7 @@ function setupPaymentMethodSelector() {
 }
 
 function calculateTotalSummary() {
-  const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+  const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
   const categoryKey = document.getElementById('selectedCategory')?.value || 'tiket';
   const unitPrice = parseInt(document.getElementById('selectedUnitPrice')?.value) || 10000;
   const qty = parseInt(document.getElementById('ticketQty')?.value) || 1;
@@ -229,7 +229,7 @@ function setupFormListeners() {
     btnPlus.onclick = () => {
       let q = parseInt(ticketQty.value) || 1;
       const stock = getStock();
-      const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+      const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
 
       let maxAvailable = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
@@ -247,7 +247,7 @@ function setupFormListeners() {
 
     const name = document.getElementById('custName')?.value.trim();
     const church = document.getElementById('churchSelect')?.value;
-    const day = document.getElementById('eventDaySelect')?.value || 'day1';
+    const day = document.getElementById('eventDaySelect')?.value || 'day2';
     const category = 'tiket';
     const unitPrice = parseInt(document.getElementById('selectedUnitPrice')?.value) || 10000;
     const qty = parseInt(document.getElementById('ticketQty')?.value) || 1;
@@ -325,7 +325,7 @@ function setupFormListeners() {
 
 function updateLiveStockDisplay() {
   const stock = getStock();
-  const dayKey = document.getElementById('eventDaySelect')?.value || 'day1';
+  const dayKey = document.getElementById('eventDaySelect')?.value || 'day2';
 
   let sTiket = dayKey === 'day1' ? (stock['tiket_day1'] ?? 200) : (stock['tiket_day2'] ?? 100);
 
