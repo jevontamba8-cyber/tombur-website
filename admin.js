@@ -71,15 +71,17 @@ const INITIAL_ORDERS_SEED = [
 ];
 
 function initStorage() {
-  if (!localStorage.getItem('parheheon_orders')) {
+  const existingOrders = JSON.parse(localStorage.getItem('parheheon_orders') || '[]');
+  const isDay1Loaded = localStorage.getItem('parheheon_day1_loaded_v1');
+
+  if (!isDay1Loaded || existingOrders.length === 0) {
     localStorage.setItem('parheheon_orders', JSON.stringify(INITIAL_ORDERS_SEED));
-  }
-  if (!localStorage.getItem('parheheon_stock')) {
     const initialStock = {
       'tiket_day1': 98,
       'tiket_day2': 100
     };
     localStorage.setItem('parheheon_stock', JSON.stringify(initialStock));
+    localStorage.setItem('parheheon_day1_loaded_v1', 'true');
   }
 }
 
