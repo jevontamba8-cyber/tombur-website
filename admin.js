@@ -11,6 +11,7 @@ const DAY_NAMES = {
 
 let currentVerifyingOrderId = null;
 
+const API_MYSQL_URL = 'api.php';
 const CLOUD_SYNC_URL_ORDERS = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
 const CLOUD_SYNC_URL_STOCK  = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/stock.json';
 
@@ -32,24 +33,70 @@ function saveStock(stock) {
   saveStockCloud(stock);
 }
 
-async function saveOrdersCloud(orders) {
+// Fetch-Merge-PUT Strategy for Firebase to Prevent Race Conditions & Overwrites
+async function saveOrdersCloud(ordersToSave) {
   try {
-    await fetch(CLOUD_SYNC_URL_ORDERS, {
+    // 1. Try MySQL API first if active
+    try {
+      const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) return; // MySQL active
+      }
+    } catch (e) {}
+
+    // 2. Firebase Fetch-Merge-PUT Failsafe
+    let currentCloudOrders = [];
+    try {
+      const res = await fetch(CLOUD_SYNC_URL_ORDERS);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) currentCloudOrders = data;
+      }
+    } catch (e) {}
+
+    const mergedMap = new Map();
+    currentCloudOrders.forEach(o => { if (o && o.id) mergedMap.set(o.id, o); });
+    ordersToSave.forEach(o => { if (o && o.id) mergedMap.set(o.id, o); });
+
+    const mergedList = Array.from(mergedMap.values());
+    mergedList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    const putRes = await fetch(CLOUD_SYNC_URL_ORDERS, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orders)
+      body: JSON.stringify(mergedList)
     });
+
+    if (!putRes.ok) {
+      showAdminToast('⚠️ Gagal sinkronisasi data ke Cloud Database!', 'fa-triangle-exclamation');
+    }
   } catch (e) {
     console.log('Firebase orders save error:', e);
+    showAdminToast('⚠️ Koneksi Cloud terganggu.', 'fa-wifi');
   }
 }
 
-async function saveStockCloud(stock) {
+async function saveStockCloud(stockToSave) {
   try {
+    let currentCloudStock = {};
+    try {
+      const res = await fetch(CLOUD_SYNC_URL_STOCK);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') currentCloudStock = data;
+      }
+    } catch (e) {}
+
+    const mergedStock = {
+      'tiket_day1': Math.min(currentCloudStock['tiket_day1'] ?? 200, stockToSave['tiket_day1'] ?? 200),
+      'tiket_day2': Math.min(currentCloudStock['tiket_day2'] ?? 100, stockToSave['tiket_day2'] ?? 100)
+    };
+
     await fetch(CLOUD_SYNC_URL_STOCK, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(stock)
+      body: JSON.stringify(mergedStock)
     });
   } catch (e) {
     console.log('Firebase stock save error:', e);
@@ -202,6 +249,7 @@ function setupAuth() {
   // 2. Reset Database Button Handler
   document.getElementById('btnResetDatabase')?.addEventListener('click', () => {
     if (confirm('Apakah Anda yakin ingin mengosongkan seluruh database transaksi? (Sistem akan kembali bersih dengan data 0).')) {
+      fetch(`${API_MYSQL_URL}?action=reset_database`, { method: 'POST' }).catch(() => {});
       saveOrders([]);
       const resetStock = {
         'tiket_day1': 200,
@@ -286,62 +334,73 @@ function initRealtimeOrderMonitor() {
 }
 
 async function checkNewOrders() {
+  let fetchedOrders = null;
+  let fetchedStock = null;
+  let isMysqlActive = false;
+
+  // 1. Try MySQL api.php server backend first
   try {
-    const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
-    if (resOrders.ok) {
-      const cloudOrders = await resOrders.json();
-      if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
-        const localOrders = getOrders();
+    const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        fetchedOrders = json.data;
+        isMysqlActive = true;
         
-        if (previousOrderCount === null) {
-          previousOrderCount = cloudOrders.length;
-          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
-          loadDashboardData();
-          return;
-        }
-
-        if (cloudOrders.length > previousOrderCount) {
-          const newestOrder = cloudOrders[0];
-          previousOrderCount = cloudOrders.length;
-          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
-          
-          // Also sync cloud stock
-          try {
-            const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
-            if (resStock.ok) {
-              const cloudStock = await resStock.json();
-              if (cloudStock && typeof cloudStock === 'object') {
-                localStorage.setItem('parheheon_stock', JSON.stringify(cloudStock));
-              }
-            }
-          } catch(e) {}
-
-          loadDashboardData();
-          playNotificationChime();
-          if (newestOrder) {
-            showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name} (${newestOrder.productName} - Rp ${newestOrder.total.toLocaleString('id-ID')})`, 'fa-bell');
+        try {
+          const resStk = await fetch(`${API_MYSQL_URL}?action=get_stock`);
+          if (resStk.ok) {
+            const jsonStk = await resStk.json();
+            if (jsonStk.success) fetchedStock = jsonStk.data;
           }
-        } else if (JSON.stringify(cloudOrders) !== JSON.stringify(localOrders)) {
-          previousOrderCount = cloudOrders.length;
-          localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
-          loadDashboardData();
-        }
+        } catch(e) {}
       }
     }
-  } catch (err) {
-    const currentOrders = getOrders();
+  } catch (e) {}
+
+  // 2. Firebase Fallback if MySQL is inactive (e.g. Vercel static hosting)
+  if (!isMysqlActive) {
+    try {
+      const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
+      if (resOrders.ok) {
+        fetchedOrders = await resOrders.json();
+        try {
+          const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
+          if (resStock.ok) fetchedStock = await resStock.json();
+        } catch (e) {}
+      } else {
+        showAdminToast('⚠️ Gagal terhubung ke Cloud Database!', 'fa-triangle-exclamation');
+      }
+    } catch (err) {
+      showAdminToast('⚠️ Koneksi internet / Cloud terputus!', 'fa-wifi');
+    }
+  }
+
+  if (Array.isArray(fetchedOrders)) {
+    const localOrders = getOrders();
     if (previousOrderCount === null) {
-      previousOrderCount = currentOrders.length;
+      previousOrderCount = fetchedOrders.length;
+      localStorage.setItem('parheheon_orders', JSON.stringify(fetchedOrders));
+      if (fetchedStock) localStorage.setItem('parheheon_stock', JSON.stringify(fetchedStock));
+      loadDashboardData();
       return;
     }
-    if (currentOrders.length > previousOrderCount) {
-      const newestOrder = currentOrders[0];
-      previousOrderCount = currentOrders.length;
+
+    if (fetchedOrders.length > previousOrderCount) {
+      const newestOrder = fetchedOrders[0];
+      previousOrderCount = fetchedOrders.length;
+      localStorage.setItem('parheheon_orders', JSON.stringify(fetchedOrders));
+      if (fetchedStock) localStorage.setItem('parheheon_stock', JSON.stringify(fetchedStock));
       loadDashboardData();
       playNotificationChime();
       if (newestOrder) {
-        showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name}`, 'fa-bell');
+        showAdminToast(`🔔 PESANAN BARU MASUK! [${newestOrder.id}] ${newestOrder.name} (${newestOrder.productName} - Rp ${newestOrder.total.toLocaleString('id-ID')})`, 'fa-bell');
       }
+    } else if (JSON.stringify(fetchedOrders) !== JSON.stringify(localOrders)) {
+      previousOrderCount = fetchedOrders.length;
+      localStorage.setItem('parheheon_orders', JSON.stringify(fetchedOrders));
+      if (fetchedStock) localStorage.setItem('parheheon_stock', JSON.stringify(fetchedStock));
+      loadDashboardData();
     }
   }
 }
@@ -514,6 +573,12 @@ function renderTransactionsTable() {
 }
 
 function togglePickupStatus(orderId) {
+  fetch(`${API_MYSQL_URL}?action=toggle_pickup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: orderId })
+  }).catch(() => {});
+
   const orders = getOrders();
   const idx = orders.findIndex(o => o.id === orderId);
   if (idx !== -1) {
@@ -775,6 +840,12 @@ function openVerifyModal(orderId) {
 }
 
 function updateOrderStatus(orderId, status) {
+  fetch(`${API_MYSQL_URL}?action=update_status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: orderId, status: status })
+  }).catch(() => {});
+
   const orders = getOrders();
   const idx = orders.findIndex(o => o.id === orderId);
   if (idx !== -1) {

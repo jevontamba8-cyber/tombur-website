@@ -71,6 +71,7 @@ function initStorage() {
   }
 }
 
+const API_MYSQL_URL = 'api.php';
 const CLOUD_SYNC_URL_ORDERS = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json';
 const CLOUD_SYNC_URL_STOCK  = 'https://tombur-website-default-rtdb.asia-southeast1.firebasedatabase.app/stock.json';
 
@@ -92,24 +93,70 @@ function saveStock(stock) {
   saveStockCloud(stock);
 }
 
-async function saveOrdersCloud(orders) {
+// Fetch-Merge-PUT Strategy for Firebase to Prevent Race Conditions & Overwrites
+async function saveOrdersCloud(ordersToSave) {
   try {
-    await fetch(CLOUD_SYNC_URL_ORDERS, {
+    // 1. Try MySQL API first if active
+    try {
+      const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) return; // MySQL active and handles DB
+      }
+    } catch (e) {}
+
+    // 2. Firebase Fetch-Merge-PUT Failsafe
+    let currentCloudOrders = [];
+    try {
+      const res = await fetch(CLOUD_SYNC_URL_ORDERS);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) currentCloudOrders = data;
+      }
+    } catch (e) {}
+
+    const mergedMap = new Map();
+    currentCloudOrders.forEach(o => { if (o && o.id) mergedMap.set(o.id, o); });
+    ordersToSave.forEach(o => { if (o && o.id) mergedMap.set(o.id, o); });
+
+    const mergedList = Array.from(mergedMap.values());
+    mergedList.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    const putRes = await fetch(CLOUD_SYNC_URL_ORDERS, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orders)
+      body: JSON.stringify(mergedList)
     });
+
+    if (!putRes.ok) {
+      showToast('Gagal sinkronisasi data ke Cloud Database!', 'fa-triangle-exclamation');
+    }
   } catch (e) {
     console.log('Firebase orders save error:', e);
+    showToast('Koneksi Cloud terganggu.', 'fa-wifi');
   }
 }
 
-async function saveStockCloud(stock) {
+async function saveStockCloud(stockToSave) {
   try {
+    let currentCloudStock = {};
+    try {
+      const res = await fetch(CLOUD_SYNC_URL_STOCK);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data === 'object') currentCloudStock = data;
+      }
+    } catch (e) {}
+
+    const mergedStock = {
+      'tiket_day1': Math.min(currentCloudStock['tiket_day1'] ?? 200, stockToSave['tiket_day1'] ?? 200),
+      'tiket_day2': Math.min(currentCloudStock['tiket_day2'] ?? 100, stockToSave['tiket_day2'] ?? 100)
+    };
+
     await fetch(CLOUD_SYNC_URL_STOCK, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(stock)
+      body: JSON.stringify(mergedStock)
     });
   } catch (e) {
     console.log('Firebase stock save error:', e);
@@ -117,30 +164,45 @@ async function saveStockCloud(stock) {
 }
 
 async function syncCloudToLocal() {
+  // 1. Try MySQL api.php first
+  try {
+    const res = await fetch(`${API_MYSQL_URL}?action=get_orders`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        localStorage.setItem('parheheon_orders', JSON.stringify(json.data));
+        const resStock = await fetch(`${API_MYSQL_URL}?action=get_stock`);
+        if (resStock.ok) {
+          const jsonStock = await resStock.json();
+          if (jsonStock.success) localStorage.setItem('parheheon_stock', JSON.stringify(jsonStock.data));
+        }
+        return;
+      }
+    }
+  } catch (e) {}
+
+  // 2. Firebase Fallback
   try {
     const resOrders = await fetch(CLOUD_SYNC_URL_ORDERS);
     if (resOrders.ok) {
       const cloudOrders = await resOrders.json();
       if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
         localStorage.setItem('parheheon_orders', JSON.stringify(cloudOrders));
-      } else {
-        const localOrders = getOrders();
-        await saveOrdersCloud(localOrders);
       }
+    } else {
+      showToast('Gagal terhubung ke Cloud Database.', 'fa-triangle-exclamation');
     }
 
     const resStock = await fetch(CLOUD_SYNC_URL_STOCK);
     if (resStock.ok) {
       const cloudStock = await resStock.json();
-      if (cloudStock && typeof cloudStock === 'object' && (cloudStock['tiket_day1'] !== undefined || cloudStock['tiket_day2'] !== undefined)) {
+      if (cloudStock && typeof cloudStock === 'object') {
         localStorage.setItem('parheheon_stock', JSON.stringify(cloudStock));
-      } else {
-        const localStock = getStock();
-        await saveStockCloud(localStock);
       }
     }
   } catch (err) {
     console.log('Initial cloud sync status:', err);
+    showToast('Mode Offline / Koneksi Cloud terbatas.', 'fa-wifi');
   }
 }
 
@@ -333,16 +395,6 @@ function setupFormListeners() {
       return;
     }
 
-    // Deduct stock
-    if (day === 'day1') {
-      stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
-    } else if (day === 'day2') {
-      stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
-    }
-
-    saveStock(stock);
-    updateLiveStockDisplay();
-
     // Generate TRX ID
     const trxId = 'TRX-' + Math.floor(100000 + Math.random() * 900000);
     const newOrder = {
@@ -361,6 +413,25 @@ function setupFormListeners() {
       proofImage: null,
       createdAt: new Date().toISOString()
     };
+
+    // 1. Try MySQL api.php server backend
+    fetch(`${API_MYSQL_URL}?action=create_order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newOrder)
+    }).then(res => res.json()).then(json => {
+      if (json.success) console.log('MySQL order created successfully:', json);
+    }).catch(err => console.log('MySQL API fallback to Firebase/Local:', err));
+
+    // Deduct stock & save
+    if (day === 'day1') {
+      stock['tiket_day1'] = Math.max(0, (stock['tiket_day1'] ?? 200) - qty);
+    } else if (day === 'day2') {
+      stock['tiket_day2'] = Math.max(0, (stock['tiket_day2'] ?? 100) - qty);
+    }
+
+    saveStock(stock);
+    updateLiveStockDisplay();
 
     const orders = getOrders();
     orders.unshift(newOrder);
